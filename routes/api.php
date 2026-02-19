@@ -2,12 +2,13 @@
 
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PermissionController;
-
+use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\GuideController;
 
 
 Route::group(['middleware' => 'auth:sanctum'], function() {
@@ -23,10 +24,12 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('role-permissions/{id}', [PermissionController::class, 'getRolePermissions']);
     Route::put('/role-permissions', [PermissionController::class, 'updateRolePermissions']);
     Route::apiResource('permissions', PermissionController::class);
-    
+
     Route::get('/user', [ProfileController::class, 'user']);
     Route::get('/user/signin', [ProfileController::class, 'user']);
     Route::put('/user', [ProfileController::class, 'update']);
+
+//Route::apiResource('guides', GuideController::class);
 
     Route::get('abilities', function(Request $request) {
         return $request->user()->roles()->with('permissions')
@@ -41,4 +44,9 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
 });
 
 Route::get('category-list', [CategoryController::class, 'getList']);
-
+Route::apiResource('guides', GuideController::class);
+Route::apiResource('posts', PostController::class);
+//Route::get('/posts', [PostController::class, 'index']);
+//Route::post('/posts/{post}', [PostController::class, 'show']);
+//Route::post('/posts', [PostController::class, 'store']);
+//Route::delete('/posts/{post}', [PostController::class, 'destroy']);

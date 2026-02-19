@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Game;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Guide extends Model
+{
+    use HasFactory;
+
+    // 1. Campos que permitimos rellenar desde el formulario
+    protected $fillable = [
+        'title',
+        'slug',
+        'content',
+        'user_id',
+        'game_id'
+    ];
+
+    // 2. Relación: Una guía pertenece a un Usuario (Autor)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // 3. Relación: Una guía pertenece a un Juego
+    public function game()
+    {
+        return $this->belongsTo(Game::class);
+    }
+
+    // 4. Relación: Una guía tiene muchas Categorías (N:M)
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_guide');
+    }
+}
+
