@@ -41,9 +41,11 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
             ->values()
             ->toArray();
     });
+    Route::apiResource('guides', GuideController::class);
 });
 
 Route::get('category-list', [CategoryController::class, 'getList']);
+Route::apiResource('categories', CategoryController::class);
 Route::apiResource('guides', GuideController::class);
 Route::apiResource('posts', PostController::class);
 //Route::get('/posts', [PostController::class, 'index']);
