@@ -24,7 +24,7 @@
 
 <script setup>
 import { reactive } from 'vue'
-import useGuides from '../composables/guides'
+import useGuides from '../../../composables/guides'
 
 const { storeGuide } = useGuides()
 const guide = reactive({ title: '', content: '' })

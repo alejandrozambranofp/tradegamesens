@@ -45,7 +45,7 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import useGuides from '../composables/guides' // Asegúrate de que la ruta al archivo es correcta
+import useGuides from '../../../composables/guides' // Asegúrate de que la ruta al archivo es correcta
 
 const { guides, getGuides, deleteGuide } = useGuides()
 

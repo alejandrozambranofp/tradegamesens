@@ -24,6 +24,7 @@ class StoreGuideRequest extends FormRequest
         return [
             // Validamos los datos que llegan de Vue
             'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:guides,slug',
             'content' => 'required',
             'game_id' => 'required|exists:games,id',
             'categories' => 'array'
