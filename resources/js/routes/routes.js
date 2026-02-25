@@ -55,7 +55,6 @@ export default [
                 name: 'home',
                 component: () => import('../views/public/home/index.vue'),
             },
-
             {
                 path: 'login',
                 name: 'auth.login',
@@ -98,10 +97,8 @@ export default [
                     breadCrumb: 'Perfil',
                 },
             },
-
         ]
     },
-
 
     {
         path: '/admin',
@@ -124,7 +121,6 @@ export default [
                 component: () => import('../views/admin/profile/index.vue'),
                 meta: { breadCrumb: 'Profile' }
             },
-
             {
                 name: 'categories',
                 path: 'categories',
@@ -135,13 +131,12 @@ export default [
                         path: '',
                         component: () => import('../views/admin/categories/Index.vue'),
                         meta: {
-                            breadCrumb: 'View category',
+                            breadCrumb: 'Ver categorías',
                             hideBreadcrumb: true
                         }
-                    },
+                    }
                 ]
             },
-
             {
                 name: 'posts',
                 path: 'posts',
@@ -158,7 +153,28 @@ export default [
                     },
                 ]
             },
-
+            {
+                name: 'guides',
+                path: 'guides',
+                meta: { breadCrumb: 'Guías' },
+                children: [
+                    {
+                        name: 'guides.index',
+                        path: '',
+                        component: () => import('../views/admin/guides/GuidesIndex.vue'),
+                        meta: {
+                            breadCrumb: 'Ver guías',
+                            hideBreadcrumb: true
+                        }
+                    },
+                    {
+                        name: 'guides.create',
+                        path: 'create',
+                        component: () => import('../views/admin/guides/GuidesCreate.vue'),
+                        meta: { breadCrumb: 'Nueva Guía' }
+                    }
+                ]
+            },
             {
                 name: 'permissions',
                 path: 'permissions',
@@ -186,7 +202,7 @@ export default [
                         component: () => import('../views/admin/users/Index.vue'),
                         meta: {
                             breadCrumb: 'Usuarios',
-                            hideBreadcrumb: true // Ocultar breadcrumb del layout porque la Card tiene su propio header
+                            hideBreadcrumb: true
                         }
                     },
                     {
@@ -209,7 +225,6 @@ export default [
                     }
                 ]
             },
-
             {
                 name: 'roles',
                 path: 'roles',

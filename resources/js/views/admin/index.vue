@@ -164,7 +164,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import useUsers from "../../composables/users";
-import usePosts from "../../composables/posts";
+import usePosts from "../../composables/guides";
 import useCategories from "../../composables/categories";
 import useRoles from "../../composables/roles";
 

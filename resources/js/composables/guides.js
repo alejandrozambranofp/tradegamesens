@@ -1,72 +1,75 @@
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import * as yup from 'yup'
 import { useValidation } from './useValidation'
 import { useToast } from './useToast'
 
-export default function usePosts() {
+export default function useGuides() {
     const { errors, validate, clearErrors, hasError, getError } = useValidation()
     const router = useRouter()
     const toast = useToast()
 
     const isLoading = ref(false)
-    const posts = ref([])
-    const initialPost = {
+    const guides = ref([])
+    
+    // Cambiamos la estructura inicial para "Guide"
+    const initialGuide = {
         title: '',
         content: '',
         categories: [],
         thumbnail: null
     }
-    const post = ref({ ...initialPost })
+    const guide = ref({ ...initialGuide })
     const validationErrors = errors
 
-
-    const postSchema = yup.object({
+    // Esquema de validación (Punto 4 del examen)
+    const guideSchema = yup.object({
         title: yup.string().trim().required('El título es obligatorio'),
         content: yup.string().trim().required('El contenido es obligatorio'),
         categories: yup.array().nullable(),
         thumbnail: yup.mixed().nullable(),
     })
 
-    const getPosts = async () => {
-        return axios.get('/api/posts')
+    // Obtener todas las guías (READ)
+    const getGuides = async () => {
+        return axios.get('/api/guides') // Apunta a tu nueva API
             .then(response => {
-                posts.value = response.data;
+                guides.value = response.data;
                 return response;
             })
     }
 
-    const getPost = async (id) => {
-        return axios.get('/api/posts/' + id)
+    // Obtener una sola guía
+    const getGuide = async (id) => {
+        return axios.get('/api/guides/' + id)
             .then(response => {
-                post.value = response.data.data;
+                guide.value = response.data.data;
                 return response;
             })
     }
 
-    const storePost = async (post) => {
+    // Crear guía (CREATE)
+    const storeGuide = async (guideData) => {
         if (isLoading.value) return;
 
         isLoading.value = true
         clearErrors()
 
-        const { isValid } = validate(postSchema, post)
+        const { isValid } = validate(guideSchema, guideData)
         if (!isValid) {
             isLoading.value = false
             return
         }
 
-        const serializedPost = serializePost(post)
+        const serializedGuide = serializeGuide(guideData)
 
-        axios.post('/api/posts', serializedPost, {
-            headers: {
-                "content-type": "multipart/form-data"
-            }
+        axios.post('/api/guides', serializedGuide, {
+            headers: { "content-type": "multipart/form-data" }
         })
             .then(response => {
-                //router.push({ name: 'posts.index' })
-                toast.crud.created('Post')
+                toast.crud.created('Guía')
+                router.push({ name: 'guides.index' }) // Asegúrate de tener esta ruta
             })
             .catch(error => {
                 if (error.response?.data) {
@@ -76,27 +79,28 @@ export default function usePosts() {
             .finally(() => isLoading.value = false)
     }
 
-    const resetPost = () => {
-        post.value = { ...initialPost }
+    const resetGuide = () => {
+        guide.value = { ...initialGuide }
         clearErrors()
     }
 
-    const updatePost = async (post) => {
+    // Actualizar guía (UPDATE)
+    const updateGuide = async (guideData) => {
         if (isLoading.value) return;
 
         isLoading.value = true
         clearErrors()
 
-        const { isValid } = validate(postSchema, post)
+        const { isValid } = validate(guideSchema, guideData)
         if (!isValid) {
             isLoading.value = false
             return
         }
 
-        axios.put('/api/posts/' + post.id, post)
+        axios.put('/api/guides/' + guideData.id, guideData)
             .then(response => {
-                router.push({ name: 'posts.index' })
-                toast.crud.updated('Post')
+                router.push({ name: 'guides.index' })
+                toast.crud.updated('Guía')
             })
             .catch(error => {
                 if (error.response?.data) {
@@ -106,18 +110,20 @@ export default function usePosts() {
             .finally(() => isLoading.value = false)
     }
 
-    const deletePost = async (id) => {
-        axios.delete('/api/posts/' + id)
+    // Borrar guía (DELETE)
+    const deleteGuide = async (id) => {
+        axios.delete('/api/guides/' + id)
             .then(response => {
-                getPosts()
-                toast.crud.deleted('Post')
+                getGuides() // Recarga la lista
+                toast.crud.deleted('Guía')
             })
             .catch(error => {
-                toast.error('Error', 'No se pudo eliminar el post')
+                toast.error('Error', 'No se pudo eliminar la guía')
             })
     }
 
-    const serializePost = (data) => {
+    // Serializador para enviar archivos (imágenes)
+    const serializeGuide = (data) => {
         const form = new FormData()
         Object.entries(data).forEach(([key, value]) => {
             if (value === undefined || value === null) return
@@ -129,15 +135,16 @@ export default function usePosts() {
         })
         return form
     }
+
     return {
-        posts,
-        post,
-        getPosts,
-        getPost,
-        storePost,
-        updatePost,
-        deletePost,
-        resetPost,
+        guides,
+        guide,
+        getGuides,
+        getGuide,
+        storeGuide,
+        updateGuide,
+        deleteGuide,
+        resetGuide,
         hasError,
         getError,
         validationErrors,
