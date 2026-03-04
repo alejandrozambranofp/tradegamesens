@@ -4,15 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Game extends Model
 {
     use HasFactory;
 
-    // Esto permite que Tinker y los formularios guarden datos
-    protected $fillable = ['title', 'slug', 'cover']; 
+    protected $fillable = [
+        'title',
+        'slug',
+        'cover',
+    ];
 
-    public function guides()
+    /**
+     * Un juego tiene muchas guías.
+     */
+    public function guides(): HasMany
     {
         return $this->hasMany(Guide::class);
     }
