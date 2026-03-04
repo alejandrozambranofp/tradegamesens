@@ -11,6 +11,8 @@ import { langStore } from "@/store/lang";
 import './plugins/axios.js';
 import App from './main.vue'
 
+import Dropdown from 'primevue/dropdown';
+
 /*PRIMEVUE */
 import PrimeVue from "primevue/config";
 import Avatar from 'primevue/avatar';
@@ -90,6 +92,7 @@ app.use(PrimeVue, {
     }
 });
 
+app.component('Dropdown', Dropdown);
 
 app.component('Avatar', Avatar);
 app.component('Badge', Badge);

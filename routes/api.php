@@ -31,7 +31,7 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('/user/signin', [ProfileController::class, 'user']);
     Route::put('/user', [ProfileController::class, 'update']);
 
-//Route::apiResource('guides', GuideController::class);
+Route::apiResource('guides', GuideController::class);
 
     Route::get('abilities', function(Request $request) {
         return $request->user()->roles()->with('permissions')
@@ -43,7 +43,6 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
             ->values()
             ->toArray();
     });
-    Route::apiResource('guides', GuideController::class);
 });
 Route::apiResource('games', GameController::class);
 
@@ -51,11 +50,8 @@ Route::get('category-list', [CategoryController::class, 'getList']);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('guides', GuideController::class);
 Route::apiResource('posts', PostController::class);
-Route::get('games', function() {
-    return \App\Http\Resources\GameResource::collection(\App\Models\Game::all());
-});
+
 // routes/api.php
-Route::get('games', [App\Http\Controllers\Api\GameController::class, 'index']);
 //Route::get('/posts', [PostController::class, 'index']);
 //Route::post('/posts/{post}', [PostController::class, 'show']);
 //Route::post('/posts', [PostController::class, 'store']);

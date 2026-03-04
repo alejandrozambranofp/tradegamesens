@@ -25,30 +25,19 @@ class StoreGuideRequest extends FormRequest
         return [
             // El título y contenido siguen siendo obligatorios
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
-
             // IMPORTANTE: Cambiamos a 'nullable' para que no dé error en el navegador
             // El slug lo generaremos automáticamente en el Controller
-            'slug' => 'nullable|string|max:255|unique:guides,slug',
+            'slug' => 'required|string|max:255|unique:guides,slug',
+            'content' => 'required',
+
+            
 
             // El game_id es nullable para que funcione tu parche de "game_id ?? 1"
-            'game_id' => 'nullable|exists:games,id',
+            'game_id' => 'required|exists:games,id',
 
             // Las categorías deben ser un array de IDs que existan
-            'categories' => 'nullable|array',
-            'categories.*' => 'integer|exists:categories,id'
+            'categories' => 'array'
         ];
     }
 
-    /**
-     * Mensajes de error personalizados (Opcional)
-     */
-    public function messages(): array
-    {
-        return [
-            'title.required' => 'El título de la guía es obligatorio.',
-            'content.required' => 'Debes escribir el contenido de la guía.',
-            'game_id.exists' => 'El juego seleccionado no es válido.'
-        ];
-    }
 }
