@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\GuideController;
+use App\Http\Controllers\Api\GameController;
 
 
 Route::group(['middleware' => 'auth:sanctum'], function() {
@@ -16,6 +17,7 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::apiResource('users', UserController::class);
     Route::post('users/updateimg', [UserController::class,'updateimg']);
 
+    Route::apiResource('games', GameController::class);
 
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('roles', RoleController::class);
@@ -41,9 +43,12 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
             ->values()
             ->toArray();
     });
+    Route::apiResource('guides', GuideController::class);
 });
+Route::apiResource('games', GameController::class);
 
 Route::get('category-list', [CategoryController::class, 'getList']);
+Route::apiResource('categories', CategoryController::class);
 Route::apiResource('guides', GuideController::class);
 Route::apiResource('posts', PostController::class);
 //Route::get('/posts', [PostController::class, 'index']);

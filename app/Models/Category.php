@@ -9,8 +9,12 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'slug', 'color'];
 
-
+    public function guides()
+    {
+        // Una categoría pertenece a muchas guías (Relación N:M)
+        return $this->belongsToMany(Guide::class, 'category_guide');
+    }
 
 }

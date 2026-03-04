@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreGuideRequest extends FormRequest
+class StoreGameRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,9 @@ class StoreGuideRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Validamos los datos que llegan de Vue
-            'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:guides,slug',
-            'content' => 'required',
-            'game_id' => 'required|exists:games,id',
-            'categories' => 'array'
+            'title'       => 'required|string|max:255|unique:games,title',
+            'slug' => 'nullable|string|unique:games,slug',
+            'cover'       => 'nullable|string', // Aquí podrías validar 'url' o 'image' si fuera archivo
         ];
     }
 }

@@ -24,7 +24,9 @@ class StoreCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required'
+            'name' => 'required',
+            'slug' => 'required|unique:categories,slug',
+            'color' => 'nullable|regex:/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/'
         ];
     }
 }

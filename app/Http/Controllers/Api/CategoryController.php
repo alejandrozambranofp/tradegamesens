@@ -32,9 +32,10 @@ class CategoryController extends Controller
                         ->orWhere('name', 'like', '%'.request('search_global').'%');
 
                 });
-            })
-            ->orderBy($orderColumn, $orderDirection)
-            ->paginate(50);
+            });
+            $categories = Category::with('guides')
+                ->orderBy($orderColumn, $orderDirection)
+                ->paginate(50);
         return CategoryResource::collection($categories);
     }
 
@@ -48,16 +49,21 @@ class CategoryController extends Controller
 
     public function show(Category $category)
     {
-        $this->authorize('category-edit');
-        return new CategoryResource($category);
+        //$this->authorize('category-edit');
+        return new CategoryResource($category->load('guides'));
     }
 
     public function update(Category $category, StoreCategoryRequest $request)
     {
-        $this->authorize('category-edit');
+        //$this->authorize('category-edit');
         $category->update($request->validated());
 
-        return new CategoryResource($category);
+        // Si en Thunder Client envías un array de IDs de guías, se actualizan
+        if ($request->has('guides')) {
+            $category->guides()->sync($request->guides);
+        }
+
+        return new CategoryResource($category->load('guides'));
     }
 
     public function destroy(Category $category) {

@@ -17,7 +17,13 @@ class CategoryResource extends JsonResource
     {
         return [
             'id'   => $this->id,
-            'name' => $this->name//,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'color' => $this->color,
+            // Cargamos las guías relacionadas solo si están disponibles
+            'guides' => $this->whenLoaded('guides'),
+            //'created_at' => $this->created_at->format('d/m/Y'),
+            //,
 //            'created_at' => $this->created_at->toDateString()
         ];
     }
