@@ -24,8 +24,9 @@ class StoreCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'slug' => 'required|unique:categories,slug',
+            'name' => 'required|string|max:255',
+            // Cambiamos a nullable y ajustamos el unique para que ignore el ID actual al editar
+            'slug' => 'nullable|unique:categories,slug,' . $this->route('category')?->id,
             'color' => 'nullable|regex:/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/'
         ];
     }
