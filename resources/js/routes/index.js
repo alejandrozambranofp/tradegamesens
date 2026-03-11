@@ -8,8 +8,9 @@ const router = createRouter({
 
 // Opcional: Esto cambia el título de la pestaña del navegador automáticamente
 router.beforeEach((to, from, next) => {
-    document.title = to.meta.title ? `${to.meta.title} - SmokeCan` : 'SmokeCan';
+    document.title = to.meta.title ? `${to.meta.title} - TradeGameSense` : 'TradeGameSense';
     next();
 });
+
 
 export default router;

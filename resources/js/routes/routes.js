@@ -172,6 +172,16 @@ export default [
                         path: 'create',
                         component: () => import('../views/admin/guides/GuidesCreate.vue'),
                         meta: { breadCrumb: 'Nueva Guía' }
+                    },
+                    // AÑADIDO: Ruta para ver el detalle de la guía
+                    {
+                        name: 'guides.show',
+                        path: ':id',
+                        component: () => import('../views/admin/guides/GuideShow.vue'),
+                        meta: { 
+                            breadCrumb: 'Detalle de Guía',
+                            linked: false 
+                        }
                     }
                 ]
             },
