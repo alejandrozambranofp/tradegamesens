@@ -1,32 +1,26 @@
 <template>
     <div class="card p-4">
         <div class="flex justify-content-between align-items-center mb-4">
-            <h2 class="m-0 font-bold text-2xl text-gray-800 dark:text-white">Gestión de Guías</h2>
+            <h2 class="m-0 font-bold text-2xl text-gray-800 dark:text-white">Gestión de Guías - TradeGameSense</h2>
             <Button label="Nueva Guía" icon="pi pi-plus" severity="success" @click="openNew" />
         </div>
 
-        <DataTable :value="guides" paginator :rows="10" dataKey="id" class="p-datatable-sm shadow-2 border-round overflow-hidden" responsiveLayout="scroll">
+        <DataTable :value="guides" paginator :rows="10" dataKey="id" class="p-datatable-sm shadow-2 border-round overflow-hidden">
             <template #empty> <div class="p-4 text-center">No se encontraron guías.</div> </template>
             
             <Column field="id" header="ID" sortable style="width: 5rem"></Column>
-            
             <Column field="game.title" header="Juego" sortable>
                 <template #body="slotProps">
-                    <span v-if="slotProps.data.game" class="font-bold text-primary">
-                        {{ slotProps.data.game.title }}
-                    </span>
+                    <span v-if="slotProps.data.game" class="font-bold text-primary">{{ slotProps.data.game.title }}</span>
                     <span v-else class="text-500">Sin juego</span>
                 </template>
             </Column>
-
             <Column field="title" header="Título" sortable></Column>
-            
             <Column header="Categorías">
                 <template #body="slotProps">
                     <Tag v-for="cat in slotProps.data.categories" :key="cat.id" :value="cat.name" severity="info" class="mr-1" />
                 </template>
             </Column>
-
             <Column header="Acciones" style="min-width: 12rem">
                 <template #body="slotProps">
                     <div class="flex gap-2">
@@ -38,50 +32,51 @@
             </Column>
         </DataTable>
 
-        <Dialog v-model:visible="guideDialog" :header="guide.id ? 'Editar Guía' : 'Nueva Guía'" modal class="p-fluid" :style="{width: '550px'}">
+        <Dialog v-model:visible="guideDialog" :header="guide.id ? 'Editar Guía' : 'Nueva Guía'" modal class="p-fluid" :style="{width: '800px'}">
             
             <div class="field mb-4">
                 <label for="game" class="font-bold block mb-2">Juego</label>
-                <Dropdown 
-                    id="game" 
-                    v-model="guide.game_id" 
-                    :options="allGames" 
-                    optionLabel="title" 
-                    optionValue="id" 
-                    placeholder="Selecciona un juego" 
-                    :filter="true" 
-                    class="w-full" 
-                />
-                <small class="p-error" v-if="submitted && !guide.game_id">El juego es obligatorio.</small>
+                <Dropdown id="game" v-model="guide.game_id" :options="allGames" optionLabel="title" optionValue="id" placeholder="Selecciona un juego" :filter="true" class="w-full" />
             </div>
 
             <div class="field mb-4">
                 <label for="title" class="font-bold block mb-2">Título</label>
-                <InputText id="title" v-model.trim="guide.title" required autofocus placeholder="Escribe el título..." :class="{'p-invalid': submitted && !guide.title}" />
-                <small class="p-error" v-if="submitted && !guide.title">El título es obligatorio.</small>
+                <InputText id="title" v-model.trim="guide.title" required placeholder="Escribe el título..." />
             </div>
             
             <div class="field mb-4">
-                <label for="content" class="font-bold block mb-2">Contenido</label>
-                <Textarea id="content" v-model="guide.content" required rows="8" placeholder="Escribe el contenido de la guía..." />
+                <label for="content" class="font-bold block mb-2">Contenido (Puedes pegar imágenes directamente con Ctrl+V)</label>
+                <Editor v-model="guide.content" editorStyle="height: 400px" @load="onEditorLoad">
+                    <template #toolbar>
+                        <span class="ql-formats">
+                            <button class="ql-bold" v-tooltip.bottom="'Negrita'"></button>
+                            <button class="ql-italic" v-tooltip.bottom="'Cursiva'"></button>
+                            <button class="ql-underline" v-tooltip.bottom="'Subrayado'"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-header" value="1" v-tooltip.bottom="'Título 1'"></button>
+                            <button class="ql-header" value="2" v-tooltip.bottom="'Título 2'"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-list" value="ordered"></button>
+                            <button class="ql-list" value="bullet"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-link"></button>
+                            <button class="ql-image"></button>
+                        </span>
+                    </template>
+                </Editor>
             </div>
 
             <div class="field mb-4">
                 <label class="font-bold block mb-2">Categorías</label>
-                <MultiSelect 
-                    v-model="selectedCategories" 
-                    :options="allCategories" 
-                    optionLabel="name" 
-                    optionValue="id" 
-                    placeholder="Selecciona categorías" 
-                    class="w-full" 
-                    display="chip"
-                />
+                <MultiSelect v-model="selectedCategories" :options="allCategories" optionLabel="name" optionValue="id" placeholder="Selecciona categorías" class="w-full" display="chip" />
             </div>
 
             <template #footer>
                 <Button label="Cancelar" icon="pi pi-times" text @click="hideDialog" />
-                <Button label="Guardar Guía" icon="pi pi-check" severity="primary" @click="saveGuide" />
+                <Button label="Guardar Guía" icon="pi pi-check" @click="saveGuide" />
             </template>
         </Dialog>
     </div>
@@ -89,10 +84,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router'; // Añadido para que funcione viewGuide
+import { useRouter } from 'vue-router';
 import axios from 'axios';
+import Editor from 'primevue/editor';
 
-const router = useRouter(); // Inicializamos el router
+const router = useRouter();
 const guides = ref([]);
 const allCategories = ref([]);
 const allGames = ref([]); 
@@ -101,7 +97,6 @@ const guideDialog = ref(false);
 const submitted = ref(false);
 const guide = ref({ title: '', content: '', game_id: null });
 
-// Función para cargar todos los datos de la API
 const loadData = async () => {
     try {
         const [resGuides, resCats, resGames] = await Promise.all([
@@ -112,15 +107,34 @@ const loadData = async () => {
         guides.value = resGuides.data.data;
         allCategories.value = resCats.data.data;
         allGames.value = resGames.data.data;
-    } catch (error) {
-        console.error("Error al cargar datos:", error);
-    }
+    } catch (error) { console.error("Error cargando datos:", error); }
+};
+
+// LOGICA PARA PEGAR IMAGENES
+const onEditorLoad = ({ instance }) => {
+    instance.root.addEventListener('paste', async (event) => {
+        const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+        for (let item of items) {
+            if (item.type.indexOf('image') !== -1) {
+                const file = item.getAsFile();
+                const formData = new FormData();
+                formData.append('image', file);
+                try {
+                    const response = await axios.post('/api/images/upload', formData, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    const range = instance.getSelection();
+                    instance.insertEmbed(range.index, 'image', response.data.url);
+                    event.preventDefault();
+                } catch (e) { console.error("Error subiendo imagen:", e); }
+            }
+        }
+    });
 };
 
 const openNew = () => {
     guide.value = { title: '', content: '', game_id: null };
     selectedCategories.value = [];
-    submitted.value = false;
     guideDialog.value = true;
 };
 
@@ -128,52 +142,31 @@ const editGuide = (data) => {
     guide.value = { ...data };
     guide.value.game_id = data.game ? data.game.id : null;
     selectedCategories.value = data.categories ? data.categories.map(c => c.id) : [];
-    submitted.value = false;
     guideDialog.value = true;
 };
 
 const saveGuide = async () => {
-    submitted.value = true;
-    if (!guide.value.game_id || !guide.value.title || !guide.value.content) return;
-
-    const payload = { 
-        title: guide.value.title,
-        content: guide.value.content,
-        game_id: guide.value.game_id,
-        categories: selectedCategories.value 
-    };
-    
+    if (!guide.value.title || !guide.value.game_id) return;
+    const payload = { ...guide.value, categories: selectedCategories.value };
     try {
-        if (guide.value.id) {
-            await axios.put(`/api/guides/${guide.value.id}`, payload);
-        } else {
-            await axios.post('/api/guides', payload);
-        }
+        if (guide.value.id) { await axios.put(`/api/guides/${guide.value.id}`, payload); }
+        else { await axios.post('/api/guides', payload); }
         guideDialog.value = false;
         loadData();
-    } catch (error) {
-        console.error("Error al guardar:", error.response?.data);
-        alert("Error al guardar la guía: " + (error.response?.data?.message || "Error desconocido"));
-    }
+    } catch (e) { alert("Error al guardar"); }
 };
 
-const hideDialog = () => { guideDialog.value = false; };
-
 const deleteGuide = async (data) => {
-    if (confirm(`¿Estás seguro de que quieres borrar la guía: "${data.title}"?`)) {
-        try {
-            await axios.delete(`/api/guides/${data.id}`);
-            loadData();
-        } catch (error) {
-            alert("No se pudo eliminar la guía");
-        }
+    if (confirm(`¿Borrar "${data.title}"?`)) {
+        await axios.delete(`/api/guides/${data.id}`);
+        loadData();
     }
 };
 
 const viewGuide = (data) => {
-    // Usamos el slug para navegar a la vista de detalle
     router.push({ name: 'guides.show', params: { id: data.slug } });
 };
 
+const hideDialog = () => { guideDialog.value = false; };
 onMounted(loadData);
 </script>

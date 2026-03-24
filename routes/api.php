@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\GuideController;
 use App\Http\Controllers\Api\GameController;
+use App\Http\Controllers\Api\ImageController;
 
 
 Route::group(['middleware' => 'auth:sanctum'], function() {
@@ -50,6 +51,7 @@ Route::get('category-list', [CategoryController::class, 'getList']);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('guides', GuideController::class);
 Route::apiResource('posts', PostController::class);
+Route::post('images/upload', [ImageController::class, 'upload']);
 
 // routes/api.php
 //Route::get('/posts', [PostController::class, 'index']);
