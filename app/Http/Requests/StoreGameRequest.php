@@ -23,7 +23,7 @@ class StoreGameRequest extends FormRequest
     {
         return [
             'title'       => 'required|string|max:255|unique:games,title',
-            'slug' => 'nullable|string|unique:games,slug',
+            'slug'        => 'nullable|string|unique:games,slug',
             'cover'       => 'nullable|string', // Aquí podrías validar 'url' o 'image' si fuera archivo
         ];
     }

@@ -7,7 +7,7 @@ import { ref } from 'vue';
 import MainLayout from './MainLayout.vue';
 
 const items = ref([
-   
+
     {
         label: 'Contenido',
         items: [
