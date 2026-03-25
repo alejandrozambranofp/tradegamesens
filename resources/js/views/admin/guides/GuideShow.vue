@@ -14,7 +14,7 @@
 
         <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 mb-8 rounded-r-lg">
             <p class="text-blue-800 dark:text-blue-300 italic">
-                Esta es una guía oficial de <strong>TradeGameSense</strong>.
+                Esta es una guía oficial de <strong>TradeGameSense</strong>
             </p>
         </div>
 

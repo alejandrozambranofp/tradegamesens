@@ -19,12 +19,15 @@ class StoreGameRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules()
     {
+        // Esto permite que el título se repita solo si es la misma guía que estamos editando
+        $guideId = $this->route('guide'); // Obtiene el ID de la URL
+
         return [
-            'title'       => 'required|string|max:255|unique:games,title',
-            'slug' => 'nullable|string|unique:games,slug',
-            'cover'       => 'nullable|string', // Aquí podrías validar 'url' o 'image' si fuera archivo
+            'title' => 'required|string|max:255|unique:guides,title,' . $guideId,
+            'content' => 'required',
+            'game_id' => 'required|exists:games,id',
         ];
     }
 }

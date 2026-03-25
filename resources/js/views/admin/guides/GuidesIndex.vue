@@ -21,19 +21,27 @@
                     <Tag v-for="cat in slotProps.data.categories" :key="cat.id" :value="cat.name" severity="info" class="mr-1" />
                 </template>
             </Column>
-            <Column header="Acciones" style="min-width: 12rem">
+            <Column header="Acciones" style="min-width: 14rem">
                 <template #body="slotProps">
-                    <div class="flex gap-2">
-                        <Button icon="pi pi-eye" outlined rounded severity="info" @click="viewGuide(slotProps.data)" />
-                        <Button icon="pi pi-pencil" outlined rounded @click="editGuide(slotProps.data)" />
-                        <Button icon="pi pi-trash" outlined rounded severity="danger" @click="deleteGuide(slotProps.data)" />
+                    <div class="flex flex-column gap-2">
+                        <div class="flex gap-2">
+                            <Button icon="pi pi-eye" outlined rounded severity="info" @click="viewGuide(slotProps.data)" />
+
+                            <template v-if="slotProps.data.user_id == authUser?.id || isSuperAdmin">
+                                <Button icon="pi pi-pencil" outlined rounded severity="warning" @click="editGuide(slotProps.data)" />
+                                <Button icon="pi pi-trash" outlined rounded severity="danger" @click="deleteGuide(slotProps.data)" />
+                            </template>
+                        </div>
+                        
+                        <span class="text-xs text-gray-400 italic">
+                            Guía de User ID: {{ slotProps.data.user_id }} | Tu ID: {{ authUser?.id }}
+                        </span>
                     </div>
                 </template>
             </Column>
         </DataTable>
 
         <Dialog v-model:visible="guideDialog" :header="guide.id ? 'Editar Guía' : 'Nueva Guía'" modal class="p-fluid" :style="{width: '800px'}">
-            
             <div class="field mb-4">
                 <label for="game" class="font-bold block mb-2">Juego</label>
                 <Dropdown id="game" v-model="guide.game_id" :options="allGames" optionLabel="title" optionValue="id" placeholder="Selecciona un juego" :filter="true" class="w-full" />
@@ -49,13 +57,13 @@
                 <Editor v-model="guide.content" editorStyle="height: 400px" @load="onEditorLoad">
                     <template #toolbar>
                         <span class="ql-formats">
-                            <button class="ql-bold" v-tooltip.bottom="'Negrita'"></button>
-                            <button class="ql-italic" v-tooltip.bottom="'Cursiva'"></button>
-                            <button class="ql-underline" v-tooltip.bottom="'Subrayado'"></button>
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
                         </span>
                         <span class="ql-formats">
-                            <button class="ql-header" value="1" v-tooltip.bottom="'Título 1'"></button>
-                            <button class="ql-header" value="2" v-tooltip.bottom="'Título 2'"></button>
+                            <button class="ql-header" value="1"></button>
+                            <button class="ql-header" value="2"></button>
                         </span>
                         <span class="ql-formats">
                             <button class="ql-list" value="ordered"></button>
@@ -83,19 +91,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Editor from 'primevue/editor';
+import { authStore } from "../../../store/auth";
 
 const router = useRouter();
+const auth = authStore();
+
 const guides = ref([]);
 const allCategories = ref([]);
 const allGames = ref([]); 
 const selectedCategories = ref([]);
 const guideDialog = ref(false);
-const submitted = ref(false);
 const guide = ref({ title: '', content: '', game_id: null });
+
+// Propiedades computadas para permisos
+const authUser = computed(() => auth.user);
+const isSuperAdmin = computed(() => {
+    if (!auth.user) return false;
+    // Admin es ID 1 o tiene rol admin
+    return auth.user.id == 1 || 
+           auth.user.roles?.some(role => role.name.toLowerCase().includes('admin'));
+});
 
 const loadData = async () => {
     try {
@@ -107,10 +126,11 @@ const loadData = async () => {
         guides.value = resGuides.data.data;
         allCategories.value = resCats.data.data;
         allGames.value = resGames.data.data;
-    } catch (error) { console.error("Error cargando datos:", error); }
+    } catch (error) { 
+        console.error("Error cargando datos:", error); 
+    }
 };
 
-// LOGICA PARA PEGAR IMAGENES
 const onEditorLoad = ({ instance }) => {
     instance.root.addEventListener('paste', async (event) => {
         const items = (event.clipboardData || event.originalEvent.clipboardData).items;
@@ -126,7 +146,9 @@ const onEditorLoad = ({ instance }) => {
                     const range = instance.getSelection();
                     instance.insertEmbed(range.index, 'image', response.data.url);
                     event.preventDefault();
-                } catch (e) { console.error("Error subiendo imagen:", e); }
+                } catch (e) { 
+                    console.error("Error subiendo imagen:", e); 
+                }
             }
         }
     });
@@ -147,19 +169,36 @@ const editGuide = (data) => {
 
 const saveGuide = async () => {
     if (!guide.value.title || !guide.value.game_id) return;
-    const payload = { ...guide.value, categories: selectedCategories.value };
+    
+    // Aseguramos que el user_id se envíe
+    const payload = { 
+        ...guide.value, 
+        categories: selectedCategories.value,
+        user_id: guide.value.id ? guide.value.user_id : authUser.value.id
+    };
+
     try {
-        if (guide.value.id) { await axios.put(`/api/guides/${guide.value.id}`, payload); }
-        else { await axios.post('/api/guides', payload); }
+        if (guide.value.id) { 
+            await axios.put(`/api/guides/${guide.value.id}`, payload); 
+        } else { 
+            await axios.post('/api/guides', payload); 
+        }
         guideDialog.value = false;
         loadData();
-    } catch (e) { alert("Error al guardar"); }
+    } catch (e) { 
+        console.error("Error al guardar:", e.response?.data);
+        alert("Error al guardar: " + (e.response?.data?.message || "Revisa la consola")); 
+    }
 };
 
 const deleteGuide = async (data) => {
     if (confirm(`¿Borrar "${data.title}"?`)) {
-        await axios.delete(`/api/guides/${data.id}`);
-        loadData();
+        try {
+            await axios.delete(`/api/guides/${data.id}`);
+            loadData();
+        } catch (e) {
+            alert("No tienes permiso para borrar esta guía.");
+        }
     }
 };
 
@@ -168,5 +207,6 @@ const viewGuide = (data) => {
 };
 
 const hideDialog = () => { guideDialog.value = false; };
+
 onMounted(loadData);
 </script>

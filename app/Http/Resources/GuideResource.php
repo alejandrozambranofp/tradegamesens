@@ -21,6 +21,7 @@ class GuideResource extends JsonResource
             'content' => $this->content,
             'created_at' => $this->created_at->format('d/m/Y'), // Fecha bonita
             // Cargamos las relaciones solo si están disponibles
+            'user_id'    => $this->user_id,
             'user' => $this->whenLoaded('user'),
             'game' => $this->whenLoaded('game'),
             'categories' => $this->whenLoaded('categories'),

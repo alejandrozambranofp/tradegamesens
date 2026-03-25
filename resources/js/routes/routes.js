@@ -35,13 +35,20 @@ async function requireAdmin(to, from, next) {
     let user = auth.user;
 
     if (isLogin) {
+        // 1. Si es Admin, pasa siempre
         if (hasAdmin(user.roles)) {
-            next()
-        } else {
-            next('/app')
+            next();
+        } 
+        // 2. Si NO es Admin, pero va a Guías o al Dashboard base, le dejamos pasar
+        else if (to.path.includes('/admin/guides') || to.path === '/admin') {
+            next();
+        } 
+        // 3. En cualquier otro caso (Usuarios, Roles, etc.), lo echamos
+        else {
+            next('/app');
         }
     } else {
-        next('/login')
+        next('/login');
     }
 }
 
