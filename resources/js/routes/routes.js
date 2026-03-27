@@ -189,6 +189,12 @@ export default [
                             breadCrumb: 'Detalle de Guía',
                             linked: false 
                         }
+                    },
+                    {
+                        path: '/admin/my-guides',
+                        name: 'guides.mine', // Este es el nombre que usaremos
+                        component: () => import('../views/admin/guides/MyGuidesIndex.vue'),
+                        meta: { requiresAuth: true }
                     }
                 ]
             },

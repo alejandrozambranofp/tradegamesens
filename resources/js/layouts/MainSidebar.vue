@@ -71,7 +71,7 @@ const props = defineProps({
 const emit = defineEmits(['toggleSidebar', 'toggleCollapse']);
 
 const menuModel = computed(() => {
-    // COMENTA ESTA LÍNEA (ponle las dos barras // al principio):
+    // COMENTA ESTA LÍNEA si no lo has hecho:
     // if (props.menuItems) return props.menuItems; 
 
     const items = [
@@ -94,34 +94,37 @@ const menuModel = computed(() => {
             label: 'Tu Contenido',
             items: [
                 { label: 'Categorías', icon: 'pi pi-tags', route: '/admin/categories', permission: 'category-list' },
-                // SIN PERMISO: Alejandro lo verá porque no hay nada que filtrar aquí
-                { label: 'Guías', icon: 'pi pi-book', route: '/admin/guides' }
+                // NUEVAS RUTAS SEPARADAS:
+                { 
+                    label: 'Mis Guías', 
+                    icon: 'pi pi-bookmark', 
+                    route: '/admin/my-guides' 
+                },
+                { 
+                    label: 'Guías de la Comunidad', 
+                    icon: 'pi pi-globe', 
+                    route: '/admin/guides' 
+                }
             ]
         }
     ];
 
-    // FILTRADO SEGURO
+    // FILTRADO SEGURO (El resto del código se mantiene igual)
     return items.map(item => {
         const newItem = { ...item };
         if (newItem.items) {
             newItem.items = newItem.items.filter(child => {
-                // 1. Si no tiene la propiedad permission, SE MUESTRA (Caso de Guías)
                 if (!child.permission) return true;
-                
-                // 2. Si el permiso es 'all', SE MUESTRA
                 if (child.permission === 'all') return true;
-                
-                // 3. Solo si tiene un permiso específico (como user-list), preguntamos a CASL
                 try {
                     return can(child.permission);
                 } catch (e) {
-                    return false; // Si CASL falla, lo ocultamos por seguridad
+                    return false;
                 }
             });
         }
         return newItem;
     }).filter(item => {
-        // Solo mostramos el grupo si después del filtro se quedó con algún hijo
         return item.items && item.items.length > 0;
     });
 });

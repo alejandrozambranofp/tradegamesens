@@ -54,15 +54,14 @@ class GuideController extends Controller
     /**
      * Actualiza una guía existente.
      */
-    public function update(Request $request, Guide $guide)
-    {
-        // Permitir si es Admin (ID 1) O si es el creador de la guía
-        if (auth()->id() !== 1 && auth()->id() !== $guide->user_id) {
-            return response()->json(['message' => 'No puedes editar guías de otros'], 403);
-        }
+    public function update(Request $request, Guide $guide) {
+        $guide->update($request->only(['title', 'content', 'game_id']));
 
-        $guide->update($request->all());
-        return response()->json(['data' => $guide]);
+        if ($request->has('categories')) {
+            // sync() elimina las categorías viejas y pone las nuevas IDs enviadas
+            $guide->categories()->sync($request->categories);
+        }
+        return response()->json($guide);
     }
 
     public function destroy(Guide $guide)
@@ -74,5 +73,16 @@ class GuideController extends Controller
 
         $guide->delete();
         return response()->json(null, 204);
+    }
+
+    public function myGuides()
+    {
+        // Obtenemos solo las guías del usuario que está logueado
+        $guides = Guide::where('user_id', auth()->id())
+            ->with(['user', 'game', 'categories'])
+            ->latest()
+            ->paginate(10);
+
+        return GuideResource::collection($guides);
     }
 }

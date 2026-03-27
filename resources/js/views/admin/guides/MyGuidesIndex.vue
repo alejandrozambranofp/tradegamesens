@@ -1,8 +1,8 @@
 <template>
     <div class="card p-4">
         <div class="flex justify-content-between align-items-center mb-4">
-            <h2 class="m-0 font-bold text-2xl text-gray-800 dark:text-white">Guías de la Comunidad</h2>
-            <!--<Button label="Nueva Guía" icon="pi pi-plus" severity="success" @click="openNew" />-->
+            <h2 class="m-0 font-bold text-2xl text-gray-800 dark:text-white">Mis Guías</h2>
+            <Button label="Nueva Guía" icon="pi pi-plus" severity="success" @click="openNew" />
         </div>
 
         <DataTable :value="guides" paginator :rows="10" dataKey="id" class="p-datatable-sm shadow-2 border-round overflow-hidden">
@@ -94,8 +94,18 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import Editor from 'primevue/editor';
 import { authStore } from "../../../store/auth";
+
+// IMPORTACIONES EXPLÍCITAS DE PRIMEVUE
+import Button from 'primevue/button';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Tag from 'primevue/tag';
+import Dialog from 'primevue/dialog';
+import Dropdown from 'primevue/dropdown';
+import InputText from 'primevue/inputtext';
+import MultiSelect from 'primevue/multiselect';
+import Editor from 'primevue/editor';
 
 const router = useRouter();
 const auth = authStore();
@@ -107,11 +117,9 @@ const selectedCategories = ref([]);
 const guideDialog = ref(false);
 const guide = ref({ title: '', content: '', game_id: null });
 
-// Propiedades computadas para permisos
 const authUser = computed(() => auth.user);
 const isSuperAdmin = computed(() => {
     if (!auth.user) return false;
-    // Admin es ID 1 o tiene rol admin
     return auth.user.id == 1 || 
            auth.user.roles?.some(role => role.name.toLowerCase().includes('admin'));
 });
@@ -119,22 +127,22 @@ const isSuperAdmin = computed(() => {
 const loadData = async () => {
     try {
         const [resGuides, resCats, resGames] = await Promise.all([
-            axios.get('/api/guides'),
+            // Usamos la ruta que sí funciona
+            axios.get('/api/guides'), 
             axios.get('/api/categories'),
             axios.get('/api/games')
         ]);
         
         const todasLasGuias = resGuides.data.data || resGuides.data;
 
-        // FILTRO DE EXCLUSIÓN: 
-        // Solo mostramos las guías donde el user_id NO sea el de Alejandro
-        guides.value = todasLasGuias.filter(g => g.user_id !== authUser.value.id);
+        // FILTRO CRUCIAL: Solo guías donde el user_id coincida con el usuario autenticado
+        guides.value = todasLasGuias.filter(g => g.user_id === authUser.value.id);
 
         allCategories.value = resCats.data.data || resCats.data;
         allGames.value = resGames.data.data || resGames.data;
         
     } catch (error) { 
-        console.error("Error cargando datos en Comunidad:", error);
+        console.error("Error cargando datos:", error);
     }
 };
 
@@ -175,26 +183,40 @@ const editGuide = (data) => {
 };
 
 const saveGuide = async () => {
-    if (!guide.value.title || !guide.value.game_id) return;
+    // Validación: Título, Juego y al menos una categoría
+    if (!guide.value.title || !guide.value.game_id) {
+        alert("El título y el juego son obligatorios.");
+        return;
+    }
+
+    if (selectedCategories.value.length === 0) {
+        alert("Debes seleccionar al menos una categoría.");
+        return;
+    }
     
-    // Aseguramos que el user_id se envíe
+    // CONSTRUCCIÓN LIMPIA DEL PAYLOAD
+    // Evitamos enviar el objeto "categories" original y enviamos solo el array de IDs
     const payload = { 
-        ...guide.value, 
-        categories: selectedCategories.value,
+        title: guide.value.title,
+        content: guide.value.content,
+        game_id: guide.value.game_id,
+        categories: selectedCategories.value, // Array de IDs [1, 2, 3]
         user_id: guide.value.id ? guide.value.user_id : authUser.value.id
     };
 
     try {
         if (guide.value.id) { 
+            // EDITAR: Usamos el ID de la guía y el payload limpio
             await axios.put(`/api/guides/${guide.value.id}`, payload); 
         } else { 
+            // CREAR
             await axios.post('/api/guides', payload); 
         }
         guideDialog.value = false;
-        loadData();
+        await loadData(); // Recargamos para ver los cambios reflejados
     } catch (e) { 
         console.error("Error al guardar:", e.response?.data);
-        alert("Error al guardar: " + (e.response?.data?.message || "Revisa la consola")); 
+        alert("Error al guardar la guía. Revisa la consola.");
     }
 };
 

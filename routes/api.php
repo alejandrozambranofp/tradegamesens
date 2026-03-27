@@ -45,6 +45,11 @@ Route::apiResource('guides', GuideController::class);
             ->toArray();
     });
 });
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('guides/my-guides', [GuideController::class, 'myGuides']);
+    Route::apiResource('guides', GuideController::class);
+});
 Route::apiResource('games', GameController::class);
 
 Route::get('category-list', [CategoryController::class, 'getList']);
