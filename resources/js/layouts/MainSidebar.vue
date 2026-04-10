@@ -15,9 +15,6 @@
         </div>
 
         <div class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-3 gap-1 scrollbar-hide">
-            
-            
-
             <template v-for="(item, index) in menuModel" :key="index">
                 <div v-if="item.label && item.items" class="px-3 mt-4 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap transition-opacity duration-200"
                      :class="props.isCollapsed ? 'hidden' : 'opacity-100'">
@@ -55,11 +52,8 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import { useAbility } from '@casl/vue';
 
-const route = useRoute();
-const router = useRouter();
 const { can } = useAbility();
 
 const props = defineProps({
@@ -68,19 +62,17 @@ const props = defineProps({
     menuItems: { type: Array, default: null }
 });
 
-const emit = defineEmits(['toggleSidebar', 'toggleCollapse']);
+const emit = defineEmits(['toggleSidebar']);
 
 const menuModel = computed(() => {
-    // COMENTA ESTA LÍNEA si no lo has hecho:
-    // if (props.menuItems) return props.menuItems; 
+    // Si se pasan items por props (como hace UserLayout), úsalos directamente
+    if (props.menuItems && props.menuItems.length > 0) return props.menuItems;
 
-    const items = [
+    // Menú por defecto (Admin)
+    const defaultItems = [
         {
-            icon: 'pi pi-home',
             label: 'PRINCIPAL',
-            items: [
-                { label: 'Dashboard', icon: 'pi pi-compass', route: '/admin', permission: 'all' }
-            ]
+            items: [{ label: 'Dashboard', icon: 'pi pi-compass', route: '/admin', permission: 'all' }]
         },
         {
             label: 'Gestión Privada',
@@ -94,38 +86,22 @@ const menuModel = computed(() => {
             label: 'Tu Contenido',
             items: [
                 { label: 'Categorías', icon: 'pi pi-tags', route: '/admin/categories', permission: 'category-list' },
-                // NUEVAS RUTAS SEPARADAS:
-                { 
-                    label: 'Mis Guías', 
-                    icon: 'pi pi-bookmark', 
-                    route: '/admin/my-guides' 
-                },
-                { 
-                    label: 'Guías de la Comunidad', 
-                    icon: 'pi pi-globe', 
-                    route: '/admin/guides' 
-                }
+                // Aquí usamos rutas completas (path) o nombres (name), es más seguro usar 'name' como acordamos en el router
+                { label: 'Mis Guías', icon: 'pi pi-bookmark', route: { name: 'app.guides.my' }, permission: 'all' },
+                { label: 'Guías de la Comunidad', icon: 'pi pi-globe', route: { name: 'app.guides.community' }, permission: 'all' }
             ]
         }
     ];
 
-    // FILTRADO SEGURO (El resto del código se mantiene igual)
-    return items.map(item => {
+    return defaultItems.map(item => {
         const newItem = { ...item };
         if (newItem.items) {
             newItem.items = newItem.items.filter(child => {
-                if (!child.permission) return true;
-                if (child.permission === 'all') return true;
-                try {
-                    return can(child.permission);
-                } catch (e) {
-                    return false;
-                }
+                if (!child.permission || child.permission === 'all') return true;
+                try { return can(child.permission); } catch (e) { return false; }
             });
         }
         return newItem;
-    }).filter(item => {
-        return item.items && item.items.length > 0;
-    });
+    }).filter(item => item.items && item.items.length > 0);
 });
 </script>

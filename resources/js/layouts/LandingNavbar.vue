@@ -3,12 +3,10 @@
         class="fixed w-full z-50 border-b border-gray-200 dark:border-gray-800 transition-all duration-300"
         :class="isDarkTheme ? 'bg-gray-900' : 'bg-white'">
         <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
-            <!-- Logo -->
             <router-link to="/" class="flex items-center gap-2">
                 <img src="/images/logo.svg" alt="logo" class="h-10 w-auto"/>
             </router-link>
 
-            <!-- Mobile Menu Button -->
             <button
                 v-if="!isDesktop"
                 @click="visibleMobileMenu = true"
@@ -16,18 +14,16 @@
                 <i class="pi pi-bars text-2xl"></i>
             </button>
 
-            <!-- Desktop Menu -->
             <div v-if="isDesktop" class="flex items-center gap-6">
                 <router-link 
                     v-for="link in navLinks" 
-                    :key="link.route" 
+                    :key="link.label" 
                     :to="link.route" 
                     class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
                 >
                     {{ link.label }}
                 </router-link>
                 
-                <!-- Actions -->
                 <div class="flex items-center gap-3 pl-6 border-l border-gray-200 dark:border-gray-700">
                     <LocaleSwitcher />
                     
@@ -62,17 +58,13 @@
             </div>
         </nav>
 
-        <!-- Mobile Menu -->
         <div v-if="visibleMobileMenu" class="fixed inset-0 z-50 lg:hidden">
-            <!-- Backdrop -->
             <div class="absolute inset-0 bg-black/50" @click="visibleMobileMenu = false"></div>
             
-            <!-- Panel -->
             <div 
                 class="absolute right-0 top-0 h-full w-full sm:w-80 shadow-2xl"
                 :class="isDarkTheme ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'"
                 @click.stop>
-                <!-- Header -->
                 <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
                     <div class="flex items-center gap-2">
                         <img src="/images/logo.svg" alt="logo" class="h-8"/>
@@ -85,13 +77,11 @@
                     </button>
                 </div>
 
-                <!-- Content -->
                 <div class="flex flex-col gap-4 p-4 h-[calc(100%-5rem)] overflow-y-auto">
-                    <!-- Nav Links -->
                     <div class="flex flex-col gap-1">
                         <router-link 
                             v-for="link in navLinks"
-                            :key="link.route"
+                            :key="link.label"
                             :to="link.route" 
                             @click="visibleMobileMenu = false"
                             class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -102,7 +92,6 @@
 
                     <div class="border-t border-gray-200 dark:border-gray-800"></div>
 
-                    <!-- Auth -->
                     <div class="flex flex-col gap-3">
                         <template v-if="!authStore().user?.name">
                             <router-link to="/login" @click="visibleMobileMenu = false">
@@ -122,7 +111,6 @@
                         </template>
                     </div>
                     
-                    <!-- Theme Toggle -->
                     <div 
                         class="mt-auto flex items-center justify-between p-3 rounded-lg"
                         :class="isDarkTheme ? 'bg-gray-800' : 'bg-gray-50'">
@@ -139,7 +127,6 @@
         </div>
     </div>
     
-    <!-- Spacer -->
     <div class="h-20"></div>
 </template>
 
@@ -160,8 +147,11 @@ const isDesktop = ref(window.innerWidth >= 992);
 const { processing, logout } = useAuth();
 const { toggleDarkMode, isDarkTheme, setDefaultMode } = useLayout();
 
+// Aquí hemos añadido los nuevos enlaces
 const navLinks = [
-    { label: 'Inicio', route: '/', icon: 'pi pi-home' }
+    { label: 'Inicio', route: '/', icon: 'pi pi-home' },
+    { label: 'Guías', route: { name: 'app.guides.community' }, icon: 'pi pi-globe' },
+    { label: 'Mis Guías', route: { name: 'app.guides.my' }, icon: 'pi pi-bookmark' }
 ];
 
 const items = computed(() => [
@@ -224,4 +214,3 @@ onBeforeMount(() => {
     setDefaultMode()
 })
 </script>
-
