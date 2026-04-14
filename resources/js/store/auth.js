@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 
 export const authStore = defineStore("authStore", () => {
 
-    let user = ref({name:''});
+    let user = ref({ name: '' });
     let authenticated = ref(false);
 
     async function login(data) {
@@ -46,8 +46,8 @@ export const authStore = defineStore("authStore", () => {
     }
 
     function is(roleName) {
-        return user.value.roles.some(role => role.name === roleName);
+        return user.value?.roles?.some(role => role.name.toLowerCase() === roleName.toLowerCase()) || false;
     }
 
-    return { user, authenticated, login, is, getUser,getUserSignIn, logout};
-}, {persist: true});
+    return { user, authenticated, login, is, getUser, getUserSignIn, logout };
+}, { persist: true });

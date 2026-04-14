@@ -60,7 +60,14 @@ export default function useAuth() {
                     showConfirmButton: false,
                     timer: 1500
                 })
-                await router.push({ name: 'admin.index' })
+                // Redirección limpia basada en roles
+                const isAdmin = auth.user?.roles?.some(r => r.name.toLowerCase().includes('admin'));
+                
+                if (isAdmin) {
+                    await router.push({ name: 'admin.index' })
+                } else {
+                    await router.push({ name: 'home' })
+                }
             })
             .catch(error => {
                 if (error.response?.data) {

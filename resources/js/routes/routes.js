@@ -21,9 +21,14 @@ const hasAdmin = (roles = []) =>
 async function guest(to, from, next) {
     const auth = authStore()
     let isLogin = !!auth.authenticated;
+    let user = auth.user;
 
     if (isLogin) {
-        next('/app') 
+        if (hasAdmin(user?.roles)) {
+            next('/admin') 
+        } else {
+            next('/')
+        }
     } else {
         next()
     }
@@ -92,8 +97,8 @@ export default [
             {
                 path: '',
                 name: 'app.index',
-                // Corregido: Ruta exacta que me pasaste
-                component: () => import('../views/admin/users/Index.vue'), 
+                // Mostrar "Mis Guías" como inicio del panel de usuario
+                component: () => import('../views/user/guides/MyGuidesIndex.vue'), 
             },
             {
                 name: 'app.profile',
