@@ -4,11 +4,6 @@ import { AbilityBuilder, createMongoAbility } from '@casl/ability';
 import { ABILITY_TOKEN } from '@casl/vue';
 import { authStore } from "../store/auth";
 
-let user = reactive({
-    name: '',
-    email: '',
-})
-
 export default function useAuth() {
     const processing = ref(false)
     const validationErrors = ref({})
@@ -16,6 +11,10 @@ export default function useAuth() {
     const swal = inject('$swal')
     const ability = inject(ABILITY_TOKEN)
     const auth = authStore()
+
+    // En lugar de una variable externa, usamos una referencia reactiva al store
+    // Esto evita que los datos se pierdan al navegar
+    const user = auth.user 
 
     const loginForm = reactive({
         email: '',
@@ -43,6 +42,12 @@ export default function useAuth() {
         password_confirmation: ''
     })
 
+    const loginUser = async () => {
+        console.log('GettingUserSignIn: loginUser')
+        // Actualizamos las habilidades de CASL basadas en los permisos del usuario
+        await getAbilities()
+    }
+
     const submitLogin = async () => {
         if (processing.value) return
 
@@ -51,16 +56,23 @@ export default function useAuth() {
 
         await axios.post('/login', loginForm)
             .then(async response => {
-                await auth.getUser()
-                //await store.dispatch('auth/getUser')
+                // 1. Obtenemos el usuario del servidor
+                await auth.getUser() 
+                
+                // 2. IMPORTANTE: Guardamos en localStorage para que el F5 no borre nada
+                localStorage.setItem('user', JSON.stringify(auth.user))
+                
+                // 3. Cargamos permisos
                 await loginUser()
+
                 swal({
                     icon: 'success',
                     title: 'Login correcto',
                     showConfirmButton: false,
                     timer: 1500
                 })
-                // Redirección limpia basada en roles
+
+                // Redirección basada en roles
                 const isAdmin = auth.user?.roles?.some(r => r.name.toLowerCase().includes('admin'));
                 
                 if (isAdmin) {
@@ -85,8 +97,6 @@ export default function useAuth() {
 
         await axios.post('/register', registerForm)
             .then(async response => {
-                // await store.dispatch('auth/getUser')
-                // await loginUser()
                 swal({
                     icon: 'success',
                     title: 'Registration successfully',
@@ -113,11 +123,10 @@ export default function useAuth() {
             .then(async response => {
                 swal({
                     icon: 'success',
-                    title: 'We have emailed your password reset link! Please check your mail inbox.',
+                    title: 'We have emailed your password reset link!',
                     showConfirmButton: false,
                     timer: 1500
                 })
-                // await router.push({ name: 'admin.index' })
             })
             .catch(error => {
                 if (error.response?.data) {
@@ -151,18 +160,7 @@ export default function useAuth() {
             .finally(() => processing.value = false)
     }
 
-    const loginUser = () => {
-        //const auth = authStore(); //TODO test
-        console.log('GettingUserSignIn: loginUser')
-        user = auth.user
-        // Cookies.set('loggedIn', true)
-        getAbilities()
-    }
-
     const getUser = async () => {
-        const auth = authStore();
-        console.log('GettingUser')
-
         if (auth.authenticated) {
             await auth.getUser()
             await loginUser()
@@ -170,9 +168,6 @@ export default function useAuth() {
     }
 
     const getUserSignIn = async () => {
-        const auth = authStore();
-        console.log('GettingUserSignIn')
-
         if (auth.authenticated) {
             await auth.getUserSignIn()
             await loginUser()
@@ -186,22 +181,16 @@ export default function useAuth() {
 
         axios.post('/logout')
             .then(response => {
-                user.name = ''
-                user.email = ''
+                // Limpiamos store y localstorage
                 auth.logout()
-                //store.dispatch('auth/logout')
+                localStorage.removeItem('user')
                 router.push({ name: 'auth.login' })
             })
             .catch(error => {
-                // swal({
-                //     icon: 'error',
-                //     title: error.response.status,
-                //     text: error.response.statusText
-                // })
+                console.error(error)
             })
             .finally(() => {
                 processing.value = false
-                // Cookies.remove('loggedIn')
             })
     }
 
@@ -213,6 +202,7 @@ export default function useAuth() {
                 can(permissions)
                 ability.update(rules)
             })
+            .catch(e => console.error("Error cargando habilidades:", e))
     }
 
     return {
