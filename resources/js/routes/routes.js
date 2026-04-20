@@ -61,6 +61,11 @@ export default [
                 component: () => import('../views/public/home/index.vue'),
             },
             {
+                name: 'guides.show',
+                path: 'guides/:id',
+                component: () => import('../views/admin/guides/GuideShow.vue'),
+            },
+            {
                 path: 'login',
                 name: 'auth.login',
                 component: () => import('../views/auth/login/Login.vue'),

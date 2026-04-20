@@ -34,7 +34,10 @@
 
         <div class="flex justify-content-between align-items-center mb-4">
             <h2 class="m-0 font-bold text-2xl text-gray-800 dark:text-white">Mis Guías</h2>
-            <Button label="Nueva Guía" icon="pi pi-plus" severity="success" @click="openNew" />
+            <div class="flex gap-2">
+                <Button label="Volver a Inicio" icon="pi pi-home" severity="secondary" outlined @click="router.push('/')" />
+                <Button label="Nueva Guía" icon="pi pi-plus" severity="success" @click="openNew" />
+            </div>
         </div>
 
         <DataTable :value="guides" paginator :rows="10" dataKey="id" class="p-datatable-sm shadow-2 border-round overflow-hidden">
@@ -53,22 +56,66 @@
             <Column header="Acciones">
                 <template #body="slotProps">
                     <div class="flex gap-2">
+                        <Button icon="pi pi-eye" outlined rounded severity="info" @click="viewGuide(slotProps.data)" />
                         <Button icon="pi pi-pencil" outlined rounded severity="warning" @click="editGuide(slotProps.data)" />
                         <Button icon="pi pi-trash" outlined rounded severity="danger" @click="deleteGuide(slotProps.data)" />
                     </div>
                 </template>
             </Column>
         </DataTable>
+
+        <Dialog v-model:visible="guideDialog" :header="guide.id ? 'Editar Guía' : 'Nueva Guía'" modal class="p-fluid" :style="{width: '800px'}">
+            <div class="field mb-4">
+                <label for="game" class="font-bold block mb-2">Juego</label>
+                <Dropdown id="game" v-model="guide.game_id" :options="allGames" optionLabel="title" optionValue="id" placeholder="Selecciona un juego" :filter="true" class="w-full" />
+            </div>
+            <div class="field mb-4">
+                <label for="title" class="font-bold block mb-2">Título</label>
+                <InputText id="title" v-model.trim="guide.title" required placeholder="Escribe el título..." />
+            </div>
+            <div class="field mb-4">
+                <label for="content" class="font-bold block mb-2">Contenido</label>
+                <Editor v-model="guide.content" editorStyle="height: 400px" />
+            </div>
+            <div class="field mb-4">
+                <label class="font-bold block mb-2">Categorías</label>
+                <MultiSelect v-model="selectedCategories" :options="allCategories" optionLabel="name" optionValue="id" placeholder="Selecciona categorías" class="w-full" display="chip" />
+            </div>
+            <template #footer>
+                <Button label="Cancelar" icon="pi pi-times" text @click="hideDialog" />
+                <Button label="Guardar Guía" icon="pi pi-check" @click="saveGuide" />
+            </template>
+        </Dialog>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { authStore } from "@/store/auth";
 
+// Importaciones de PrimeVue para asegurar que funcionen
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Dialog from 'primevue/dialog';
+import Dropdown from 'primevue/dropdown';
+import MultiSelect from 'primevue/multiselect';
+import Editor from 'primevue/editor';
+import Tag from 'primevue/tag';
+
+const router = useRouter();
+
 const auth = authStore();
 const guides = ref([]);
+const allCategories = ref([]);
+const allGames = ref([]);
+const selectedCategories = ref([]);
+const guideDialog = ref(false);
+const guide = ref({ title: '', content: '', game_id: null });
+
 const isSavingProfile = ref(false);
 const profileName = ref('');
 const avatarPreview = ref(null);
@@ -78,18 +125,25 @@ const fileInput = ref(null);
 const authUser = computed(() => auth.user);
 
 // 1. DEFINICIÓN DE FUNCIONES
-const loadGuides = async () => {
-    // Protección crucial: si no hay usuario, no pedimos nada
+const loadData = async () => {
     if (!authUser.value?.id) return;
 
     try {
-        const res = await axios.get('/api/guides');
-        const allGuides = res.data.data || res.data;
+        const [resGuides, resCats, resGames] = await Promise.all([
+            axios.get('/api/guides'),
+            axios.get('/api/categories'),
+            axios.get('/api/games')
+        ]);
+        
+        const allGuides = resGuides.data.data || resGuides.data;
         if (Array.isArray(allGuides)) {
             guides.value = allGuides.filter(g => g.user_id === authUser.value.id);
         }
+        
+        allCategories.value = resCats.data.data || resCats.data;
+        allGames.value = resGames.data.data || resGames.data;
     } catch (e) {
-        console.error("Error al obtener guías:", e);
+        console.error("Error al obtener datos:", e);
     }
 };
 
@@ -124,23 +178,80 @@ const saveProfile = async () => {
 };
 
 // Funciones CRUD
-const openNew = () => { console.log("Nueva guía"); };
-const editGuide = (g) => { console.log("Editar", g); };
-const deleteGuide = (g) => { console.log("Borrar", g); };
+const openNew = () => {
+    guide.value = { title: '', content: '', game_id: null };
+    selectedCategories.value = [];
+    guideDialog.value = true;
+};
+
+const editGuide = (data) => {
+    guide.value = { ...data };
+    guide.value.game_id = data.game ? data.game.id : null;
+    selectedCategories.value = data.categories ? data.categories.map(c => c.id) : [];
+    guideDialog.value = true;
+};
+
+const saveGuide = async () => {
+    if (!guide.value.title || !guide.value.game_id) {
+        alert("Por favor rellena el título y selecciona un juego");
+        return;
+    }
+
+    const payload = { 
+        title: guide.value.title,
+        content: guide.value.content,
+        game_id: guide.value.game_id,
+        categories: selectedCategories.value,
+        user_id: guide.value.id ? guide.value.user_id : authUser.value.id
+    };
+
+    try {
+        if (guide.value.id) {
+            await axios.put(`/api/guides/${guide.value.id}`, payload);
+        } else {
+            await axios.post('/api/guides', payload);
+        }
+        guideDialog.value = false;
+        loadData();
+    } catch (e) {
+        console.error(e);
+        alert("Error al guardar la guía");
+    }
+};
+
+const deleteGuide = async (data) => {
+    if (confirm("¿Estás seguro de que quieres eliminar esta guía?")) {
+        try {
+            await axios.delete(`/api/guides/${data.id}`);
+            loadData();
+        } catch (e) {
+            console.error(e);
+            alert("Error al eliminar la guía");
+        }
+    }
+};
+
+const viewGuide = (data) => {
+    router.push({ name: 'guides.show', params: { id: data.slug } });
+};
+
+const hideDialog = () => {
+    guideDialog.value = false;
+};
 
 // 2. SINCRONIZACIÓN
 // Escuchamos al usuario: cuando aparezca (aunque sea un segundo tarde), cargamos todo
 watch(authUser, (user) => {
     if (user) {
         profileName.value = user.name || '';
-        loadGuides();
+        loadData();
     }
 }, { immediate: true });
 
 onMounted(() => {
     if (authUser.value) {
         profileName.value = authUser.value.name || '';
-        loadGuides();
+        loadData();
     }
 });
 </script>
