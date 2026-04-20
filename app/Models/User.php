@@ -30,6 +30,7 @@ class User extends Authenticatable implements HasMedia
         'surname1',
         'surname2',
         'avatar',
+        'bio',
     ];
 
     /**
@@ -85,5 +86,15 @@ class User extends Authenticatable implements HasMedia
             return asset($this->avatar);
         }
         return null;
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Guide::class, 'favorite_guide_user');
+    }
+
+    public function guides()
+    {
+        return $this->hasMany(Guide::class);
     }
 }

@@ -25,6 +25,15 @@
                     <div class="flex flex-column gap-2">
                         <div class="flex gap-2">
                             <Button icon="pi pi-eye" outlined rounded severity="info" @click="viewGuide(slotProps.data)" />
+                            
+                            <!-- Botón Favoritos -->
+                            <Button 
+                                :icon="slotProps.data.is_favorite ? 'pi pi-star-fill' : 'pi pi-star'" 
+                                :severity="slotProps.data.is_favorite ? 'warning' : 'secondary'"
+                                outlined rounded 
+                                @click="toggleFavorite(slotProps.data)" 
+                                v-tooltip="'Guardar en favoritos'"
+                            />
 
                             <template v-if="slotProps.data.user_id == authUser?.id || isSuperAdmin">
                                 <Button icon="pi pi-pencil" outlined rounded severity="warning" @click="editGuide(slotProps.data)" />
@@ -195,6 +204,16 @@ const deleteGuide = async (data) => {
 
 const viewGuide = (data) => {
     router.push({ name: 'guides.show', params: { id: data.slug } });
+};
+
+const toggleFavorite = async (guide) => {
+    try {
+        await axios.post(`/api/guides/${guide.id}/favorite`);
+        // Actualizamos el estado localmente para feedback inmediato
+        guide.is_favorite = !guide.is_favorite;
+    } catch (e) {
+        console.error(e);
+    }
 };
 
 const hideDialog = () => { guideDialog.value = false; };

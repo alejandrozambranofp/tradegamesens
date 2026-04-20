@@ -29,6 +29,7 @@ class StoreGuideRequest extends FormRequest
                 // Ignora el ID actual para permitir editar sin cambiar el slug
                 Rule::unique('guides', 'slug')->ignore($guideId),
             ],
+            'image' => 'nullable|image|max:2048',
         ];
     }
 }

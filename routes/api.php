@@ -35,6 +35,8 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
 
     // Guías, Juegos y Categorías
     Route::get('guides/my-guides', [GuideController::class, 'myGuides']);
+    Route::get('guides/favorites', [GuideController::class, 'favorites']);
+    Route::post('guides/{guide}/favorite', [GuideController::class, 'toggleFavorite']);
     Route::apiResource('guides', GuideController::class);
     Route::apiResource('games', GameController::class);
     Route::apiResource('categories', CategoryController::class);

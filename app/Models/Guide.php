@@ -16,8 +16,19 @@ class Guide extends Model
         'slug',
         'content',
         'user_id',
-        'game_id'
+        'game_id',
+        'image'
     ];
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset($this->image);
+        }
+        return null;
+    }
 
     // 2. Relación: Una guía pertenece a un Usuario (Autor)
     public function user()
@@ -35,6 +46,11 @@ class Guide extends Model
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_guide');
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorite_guide_user');
     }
 }
 
