@@ -36,5 +36,11 @@ class Guide extends Model
     {
         return $this->belongsToMany(Category::class, 'category_guide');
     }
+
+    // 5. Relación: Una guía tiene muchas Valoraciones (1:N)
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
 }
 

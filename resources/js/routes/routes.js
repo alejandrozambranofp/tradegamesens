@@ -126,6 +126,12 @@ export default [
                 path: 'guides',
                 component: () => import('../views/public/guides/GuidesIndex.vue'),
                 meta: { breadCrumb: 'Guías de la Comunidad' },
+            },
+            {
+                name: 'guides.show',
+                path: 'guide/:id',
+                component: () => import('../views/admin/guides/GuideShow.vue'),
+                meta: { breadCrumb: 'Ver Guía' },
             }
         ]
     },

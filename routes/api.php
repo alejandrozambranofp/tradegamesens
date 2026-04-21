@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\GuideController;
 use App\Http\Controllers\Api\GameController;
 use App\Http\Controllers\Api\ImageController;
+use App\Http\Controllers\Api\RatingController;
 
 
 Route::group(['middleware' => 'auth:sanctum'], function() {
@@ -49,11 +50,13 @@ Route::apiResource('guides', GuideController::class);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('guides/my-guides', [GuideController::class, 'myGuides']);
     Route::apiResource('guides', GuideController::class);
+    Route::apiResource('ratings', RatingController::class);
 });
 Route::apiResource('games', GameController::class);
 
 Route::get('category-list', [CategoryController::class, 'getList']);
 Route::apiResource('categories', CategoryController::class);
+Route::get('guides/top-rated', [GuideController::class, 'topRated']);
 Route::apiResource('guides', GuideController::class);
 Route::apiResource('posts', PostController::class);
 Route::post('images/upload', [ImageController::class, 'upload']);
