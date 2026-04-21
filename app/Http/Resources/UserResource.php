@@ -15,15 +15,18 @@ class UserResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'   => $this->id,
+            'id' => $this->id,
             'alias' => $this->alias,
             'name' => $this->name,
             'surname1' => $this->surname1,
             'surname2' => $this->surname2,
             'email' => $this->email,
-            'roles' => RoleResource::collection($this->roles),
+            'bio' => $this->bio,
+            'roles' => RoleResource::collection($this->whenLoaded('roles')),
             'avatar' => count($this->getMedia('*')) > 0 ? $this->getMedia('*')[0]->getUrl() : null,
-            'created_at' => $this->created_at->toDateString()
+            'avatar_url' => $this->avatar_url,
+            'guides_count' => $this->guides()->count(),
+            'created_at' => $this->created_at?->toDateString()
         ];
     }
 }

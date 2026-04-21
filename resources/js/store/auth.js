@@ -19,9 +19,9 @@ export const authStore = defineStore("authStore", () => {
     async function getUser(data) {
 
         await axios.get('/api/user').then(response => {
-            user.value = response.data.data
+            user.value = response.data.data || response.data
             authenticated.value = true
-            console.log('getUser AT: true ');
+            console.log('getUser: success');
             console.log(user.value);
         }).catch(error => {
             console.log('getUser: error ');
@@ -31,8 +31,8 @@ export const authStore = defineStore("authStore", () => {
     }
 
     async function getUserSignIn(data) {
-        await axios.get('/api/user/signin').then(response => {
-            user.value = response.data.data
+        await axios.get('/api/user').then(response => {
+            user.value = response.data.data || response.data;
             authenticated.value = true
         }).catch(error => {
             console.log('getUserSignIn: error ');

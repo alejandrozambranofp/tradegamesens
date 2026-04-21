@@ -8,6 +8,7 @@ use App\Http\Resources\GuideResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Requests\StoreGuideRequest;
+use Illuminate\Support\Facades\Storage;
 
 class GuideController extends Controller
 {
@@ -28,6 +29,11 @@ class GuideController extends Controller
         $data = $request->validated();
         $data['slug'] = Str::slug($request->title);
         $data['user_id'] = auth()->id() ?? 1;
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('guides', 'public');
+            $data['image'] = '/storage/' . $path;
+        }
 
         $guide = Guide::create($data);
 
@@ -55,7 +61,21 @@ class GuideController extends Controller
      * Actualiza una guía existente.
      */
     public function update(Request $request, Guide $guide) {
-        $guide->update($request->only(['title', 'content', 'game_id']));
+        $data = $request->only(['title', 'content', 'game_id']);
+
+        if ($request->hasFile('image')) {
+            // Borrar vieja
+            if ($guide->image) {
+                $oldPath = str_replace('/storage/', '', $guide->image);
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+            $path = $request->file('image')->store('guides', 'public');
+            $data['image'] = '/storage/' . $path;
+        }
+
+        $guide->update($data);
 
         if ($request->has('categories')) {
             // sync() elimina las categorías viejas y pone las nuevas IDs enviadas
@@ -111,4 +131,22 @@ class GuideController extends Controller
 
         return GuideResource::collection($guides);
     }
-}
+
+    public function toggleFavorite(Guide $guide)
+    {
+        $user = auth()->user();
+        $user->favorites()->toggle($guide->id);
+        
+        return response()->json(['message' => 'Favorite status updated']);
+    }
+
+    public function favorites()
+    {
+        $guides = auth()->user()->favorites()
+            ->with(['user', 'game', 'categories'])
+            ->latest()
+            ->paginate(10);
+
+        return GuideResource::collection($guides);
+    }
+}

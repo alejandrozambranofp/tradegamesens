@@ -28,7 +28,9 @@ class User extends Authenticatable implements HasMedia
         'email',
         'password',
         'surname1',
-        'surname2'
+        'surname2',
+        'avatar',
+        'bio',
     ];
 
     /**
@@ -73,5 +75,26 @@ class User extends Authenticatable implements HasMedia
                 ->width(env('IMAGE_WIDTH', 300))
                 ->height(env('IMAGE_HEIGHT', 300));
         }
+    }
+
+    protected $appends = ['avatar_url']; // Esto hace que 'avatar_url' aparezca en el JSON enviado a Vue
+
+    public function getAvatarUrlAttribute()
+    {
+        if ($this->avatar) {
+            // asset() convierte '/storage/avatars/foto.jpg' en 'http://localhost:8000/storage/avatars/foto.jpg'
+            return asset($this->avatar);
+        }
+        return null;
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Guide::class, 'favorite_guide_user');
+    }
+
+    public function guides()
+    {
+        return $this->hasMany(Guide::class);
     }
 }

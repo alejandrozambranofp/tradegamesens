@@ -19,6 +19,8 @@ class GuideResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'content' => $this->content,
+            'image_url' => $this->image_url,
+            'is_favorite' => auth()->check() ? $this->favoritedBy()->where('user_id', auth()->id())->exists() : false,
             'created_at' => $this->created_at->format('d/m/Y'), // Fecha bonita
 
             // Agregados de Ratings
