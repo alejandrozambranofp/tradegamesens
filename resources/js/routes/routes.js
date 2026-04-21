@@ -25,7 +25,7 @@ async function guest(to, from, next) {
 
     if (isLogin) {
         if (hasAdmin(user?.roles)) {
-            next('/admin') 
+            next('/admin')
         } else {
             next('/')
         }
@@ -63,7 +63,7 @@ export default [
             {
                 name: 'guides.show',
                 path: 'guides/:id',
-                component: () => import('../views/admin/guides/GuideShow.vue'),
+                component: () => import('../views/user/guides/GuideShow.vue'),
             },
             {
                 path: 'login',
@@ -103,7 +103,7 @@ export default [
                 path: '',
                 name: 'app.index',
                 // Mostrar "Mis Guías" como inicio del panel de usuario
-                component: () => import('../views/user/guides/MyGuidesIndex.vue'), 
+                component: () => import('../views/user/guides/MyGuidesIndex.vue'),
             },
             {
                 name: 'app.profile',
@@ -131,6 +131,11 @@ export default [
                 path: 'guides',
                 component: () => import('../views/public/guides/GuidesIndex.vue'),
                 meta: { breadCrumb: 'Guías de la Comunidad' },
+            },
+            {
+                path: 'my-guides/contribuir/:id?',
+                name: 'contribuir',
+                component: () => import('@/views/user/guides/Contribuir.vue'),
             }
         ]
     },

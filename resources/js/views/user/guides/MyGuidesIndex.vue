@@ -294,16 +294,12 @@ const saveProfile = async () => {
 
 // LÓGICA GUÍAS
 const openNew = () => {
-    guide.value = { title: '', content: '', game_id: null };
-    selectedCategories.value = [];
-    guideDialog.value = true;
+    router.push({ name: 'contribuir' });
 };
 
-const editGuide = (data) => {
-    guide.value = { ...data };
-    guide.value.game_id = data.game ? data.game.id : null;
-    selectedCategories.value = data.categories ? data.categories.map(c => c.id) : [];
-    guideDialog.value = true;
+const editGuide = (g) => {
+    // Redirigimos a la ruta 'contribuir' pasando el ID de la guía
+    router.push({ name: 'contribuir', params: { id: g.id } });
 };
 
 const saveGuide = async () => {
