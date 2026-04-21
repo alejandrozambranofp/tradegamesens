@@ -60,7 +60,8 @@ class GuideController extends Controller
     /**
      * Actualiza una guía existente.
      */
-    public function update(Request $request, Guide $guide) {
+    public function update(Request $request, Guide $guide)
+    {
         $data = $request->only(['title', 'content', 'game_id']);
 
         if ($request->hasFile('image')) {
@@ -118,10 +119,10 @@ class GuideController extends Controller
             ->sortByDesc(function ($guide) {
                 // Normalización aproximada para el cálculo
                 // Asumimos un máximo de 5 estrellas (0 a 1)
-                $avgNormalized = ($guide->ratings_avg_score ?? 0) / 5; 
-                
+                $avgNormalized = ($guide->ratings_avg_score ?? 0) / 5;
+
                 // Normalizamos los votos (ej. a partir de 20 votos = 100% de fuerza)
-                $countNormalized = min(1, ($guide->ratings_count ?? 0) / 20); 
+                $countNormalized = min(1, ($guide->ratings_count ?? 0) / 20);
 
                 // 30% de peso al promedio, 70% de peso a la cantidad de votos
                 return ($avgNormalized * 0.3) + ($countNormalized * 0.7);
@@ -136,7 +137,7 @@ class GuideController extends Controller
     {
         $user = auth()->user();
         $user->favorites()->toggle($guide->id);
-        
+
         return response()->json(['message' => 'Favorite status updated']);
     }
 
@@ -149,4 +150,4 @@ class GuideController extends Controller
 
         return GuideResource::collection($guides);
     }
-}
+}

@@ -14,21 +14,24 @@ class GuideResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $userId = auth()->id();
+
         return [
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
             'content' => $this->content,
             'image_url' => $this->image_url,
-            'is_favorite' => auth()->check() ? $this->favoritedBy()->where('user_id', auth()->id())->exists() : false,
-            'created_at' => $this->created_at->format('d/m/Y'), // Fecha bonita
+            // Mantener la versión robusta que funciona
+            'is_favorite' => $userId ? $this->favoritedBy()->where('favorite_guide_user.user_id', $userId)->exists() : false,
+            'created_at' => $this->created_at ? $this->created_at->format('d/m/Y') : null,
 
-            // Agregados de Ratings
-            'ratings_count' => $this->whenCounted('ratings', function ($count) { return $count; }, 0),
+            // Restaurar sistema de valoraciones (Ratings)
+            'ratings_count' => $this->whenCounted('ratings', fn($count) => $count, 0),
             'rating' => round($this->ratings_avg_score ?? 0, 1),
             'ratings' => RatingResource::collection($this->whenLoaded('ratings')),
 
-            // Cargamos las relaciones solo si están disponibles
+            // Relaciones
             'user_id'    => $this->user_id,
             'user' => $this->whenLoaded('user'),
             'game' => $this->whenLoaded('game'),
