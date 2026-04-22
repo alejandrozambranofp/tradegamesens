@@ -133,9 +133,10 @@ export default [
                 meta: { breadCrumb: 'Guías de la Comunidad' },
             },
             {
-                path: 'my-guides/contribuir/:id?',
                 name: 'contribuir',
-                component: () => import('@/views/user/guides/Contribuir.vue'),
+                path: 'contribuir/:id?',
+                component: () => import('../views/user/guides/Contribuir.vue'),
+                meta: { breadCrumb: 'Contribuir' },
             }
         ]
     },

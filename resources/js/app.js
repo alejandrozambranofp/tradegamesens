@@ -49,6 +49,7 @@ import Ripple from 'primevue/ripple';
 import FloatLabel from 'primevue/floatlabel';
 import Password from 'primevue/password';
 import Rating from 'primevue/rating';
+import Carousel from 'primevue/carousel';
 
 
 import "../css/app.css";
@@ -124,6 +125,7 @@ app.component('InputIcon', InputIcon);
 app.component('Password', Password);
 app.component('SplitButton', SplitButton);
 app.component('Rating', Rating);
+app.component('Carousel', Carousel);
 
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);

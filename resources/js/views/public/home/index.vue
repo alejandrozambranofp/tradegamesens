@@ -70,26 +70,44 @@
 
         <!-- Collections Section -->
         <section class="max-w-7xl mx-auto px-6 w-full">
-            <h2 class="text-3xl font-bold dark:text-white mb-8">Colecciones</h2>
+            <h2 class="text-3xl font-bold dark:text-white mb-8 font-inter">Colecciones</h2>
             <div class="relative">
-                <div class="flex gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x">
-                    <div v-for="collection in collections" :key="collection.id" class="relative min-w-[240px] h-[360px] rounded-2xl overflow-hidden snap-start group cursor-pointer shadow-xl">
-                        <img :src="collection.image" :alt="collection.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"/>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-6">
-                            <h4 class="text-xl font-black text-white text-center tracking-wider uppercase">
-                                {{ collection.name }}
-                            </h4>
+                <Carousel 
+                    :value="collections" 
+                    :numVisible="5" 
+                    :numScroll="1" 
+                    :circular="true"
+                    :showIndicators="false"
+                    :responsiveOptions="[
+                        { breakpoint: '1024px', numVisible: 3, numScroll: 1 },
+                        { breakpoint: '768px', numVisible: 2, numScroll: 1 },
+                        { breakpoint: '560px', numVisible: 1, numScroll: 1 }
+                    ]"
+                    :pt="{
+                        item: 'px-3',
+                        previousButton: '!text-gray-400 hover:!text-white !scale-[1.8] !bg-transparent !border-none !shadow-none absolute top-1/2 -left-12 -translate-y-1/2 z-10 transition-colors',
+                        nextButton: '!text-gray-400 hover:!text-white !scale-[1.8] !bg-transparent !border-none !shadow-none absolute top-1/2 -right-12 -translate-y-1/2 z-10 transition-colors',
+                        indicatorList: 'hidden'
+                    }"
+                >
+                    <template #item="slotProps">
+                        <div class="relative w-full h-[360px] rounded-2xl overflow-hidden group cursor-pointer">
+                            <!-- Overlay Azulado -->
+                            <div class="absolute inset-0 z-10 bg-[#3b82f6]/20 mix-blend-color group-hover:bg-[#3b82f6]/10 transition-colors duration-500"></div>
+                            
+                            <img :src="slotProps.data.cover" :alt="slotProps.data.title" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"/>
+                            
+                            <!-- Fondo inferior oscuro (como en la foto para mejorar lectura) -->
+                            <div class="absolute inset-x-0 bottom-0 top-1/2 z-20 bg-gradient-to-t from-[#0a0f1d] via-[#0a0f1d]/50 to-transparent opacity-90"></div>
+                            
+                            <div class="absolute bottom-6 left-0 right-0 px-4 z-30">
+                                <h4 class="text-[1.1rem] font-black text-white text-center tracking-wider uppercase font-inter leading-tight shadow-black drop-shadow-xl">
+                                    {{ slotProps.data.title }}
+                                </h4>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <!-- Navigation Arrows (Visual only as requested for "structure") -->
-                <button class="absolute -left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-all hidden md:flex">
-                    <i class="pi pi-chevron-left"></i>
-                </button>
-                <button class="absolute -right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-all hidden md:flex">
-                    <i class="pi pi-chevron-right"></i>
-                </button>
+                    </template>
+                </Carousel>
             </div>
         </section>
 
@@ -119,8 +137,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { authStore } from "@/store/auth";
+import axios from 'axios';
 
 const searchQuery = ref('');
 
@@ -163,13 +182,20 @@ const recommendedGuides = ref([
     }
 ]);
 
-const collections = ref([
-    { id: 1, name: 'The Legend of Zelda', image: '/images/home/coll-zelda.png' },
-    { id: 2, name: 'Assassin\'s Creed', image: '/images/home/coll-ac.png' },
-    { id: 3, name: 'Resident Evil', image: 'https://images.unsplash.com/photo-1589241062272-c0a000072dfa?q=80&w=2000&auto=format&fit=crop' },
-    { id: 4, name: 'Soulsborne', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop' },
-    { id: 5, name: 'Tomb Rider', image: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?q=80&w=2000&auto=format&fit=crop' }
-]);
+const collections = ref([]);
+
+const fetchGames = async () => {
+    try {
+        const response = await axios.get('/api/games');
+        collections.value = response.data.data;
+    } catch (e) {
+        console.error("Error fetching games", e);
+    }
+}
+
+onMounted(() => {
+    fetchGames();
+});
 
 const stats = ref([
     { label: 'Total de visitas', value: '103K', icon: 'pi pi-eye' },

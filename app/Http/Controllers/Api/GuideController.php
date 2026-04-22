@@ -51,7 +51,7 @@ class GuideController extends Controller
     {
         $guide = Guide::where('id', $idOrSlug)
             ->orWhere('slug', $idOrSlug)
-            ->with(['user', 'game', 'categories'])
+            ->with(['user', 'game', 'categories', 'ratings.user'])
             ->firstOrFail();
 
         return new GuideResource($guide);
@@ -60,7 +60,8 @@ class GuideController extends Controller
     /**
      * Actualiza una guía existente.
      */
-    public function update(Request $request, Guide $guide) {
+    public function update(Request $request, Guide $guide)
+    {
         $data = $request->only(['title', 'content', 'game_id']);
 
         if ($request->hasFile('image')) {
@@ -73,6 +74,10 @@ class GuideController extends Controller
             }
             $path = $request->file('image')->store('guides', 'public');
             $data['image'] = '/storage/' . $path;
+        }
+
+        if ($request->has('title')) {
+            $data['slug'] = Str::slug($request->title);
         }
 
         $guide->update($data);
@@ -106,11 +111,37 @@ class GuideController extends Controller
         return GuideResource::collection($guides);
     }
 
+    /**
+     * Devuelve las 4 guías más votadas basándose en 30% promedio y 70% cantidad de votos
+     */
+    public function topRated()
+    {
+        $guides = Guide::with(['user', 'game', 'categories'])
+            ->withCount('ratings')
+            ->withAvg('ratings', 'score')
+            ->get()
+            ->sortByDesc(function ($guide) {
+                // Normalización aproximada para el cálculo
+                // Asumimos un máximo de 5 estrellas (0 a 1)
+                $avgNormalized = ($guide->ratings_avg_score ?? 0) / 5;
+
+                // Normalizamos los votos (ej. a partir de 20 votos = 100% de fuerza)
+                $countNormalized = min(1, ($guide->ratings_count ?? 0) / 20);
+
+                // 30% de peso al promedio, 70% de peso a la cantidad de votos
+                return ($avgNormalized * 0.3) + ($countNormalized * 0.7);
+            })
+            ->take(4)
+            ->values();
+
+        return GuideResource::collection($guides);
+    }
+
     public function toggleFavorite(Guide $guide)
     {
         $user = auth()->user();
         $user->favorites()->toggle($guide->id);
-        
+
         return response()->json(['message' => 'Favorite status updated']);
     }
 

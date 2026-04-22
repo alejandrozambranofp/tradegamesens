@@ -336,7 +336,7 @@ const removeFavorite = async (g) => {
     }
 };
 
-const viewGuide = (data) => router.push({ name: 'guides.show', params: { id: data.slug } });
+const viewGuide = (data) => router.push({ name: 'guides.show', params: { id: data.slug || data.id } });
 const hideDialog = () => guideDialog.value = false;
 
 // UTILIDADES
