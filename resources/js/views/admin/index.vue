@@ -37,10 +37,10 @@
                 <template #content>
                     <div class="stat-card-content">
                         <div class="stat-card-icon stat-icon-success">
-                            <i class="pi pi-file"></i>
+                            <i class="pi pi-file-edit"></i>
                         </div>
                         <div class="stat-card-info">
-                            <p class="stat-card-label">Posts</p>
+                            <p class="stat-card-label">Guías</p>
                             <p class="stat-card-value">{{ stats.posts || 0 }}</p>
                         </div>
                     </div>
@@ -100,15 +100,15 @@
                         </router-link>
 
                         <router-link
-                            to="/admin/posts"
+                            to="/admin/guides"
                             class="dashboard-action-item"
                         >
                             <div class="dashboard-action-icon stat-icon-success">
-                                <i class="pi pi-file"></i>
+                                <i class="pi pi-file-edit"></i>
                             </div>
                             <div class="dashboard-action-info">
-                                <p class="dashboard-action-title">Gestionar Posts</p>
-                                <p class="dashboard-action-description">Ver y editar posts</p>
+                                <p class="dashboard-action-title">Gestionar Guías</p>
+                                <p class="dashboard-action-description">Revisar y publicar guías</p>
                             </div>
                             <i class="pi pi-chevron-right dashboard-action-arrow"></i>
                         </router-link>

@@ -16,6 +16,7 @@ class Guide extends Model
         'slug',
         'content',
         'user_id',
+        'status',
         'game_id',
         'image'
     ];

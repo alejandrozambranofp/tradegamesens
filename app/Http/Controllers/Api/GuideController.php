@@ -17,7 +17,11 @@ class GuideController extends Controller
      */
     public function index()
     {
-        $guides = Guide::with(['user', 'game', 'categories'])->latest()->paginate(10);
+        // Solo guías publicadas para el público general
+        $guides = Guide::where('status', 'published')
+            ->with(['user', 'game', 'categories'])
+            ->latest()
+            ->paginate(10);
         return GuideResource::collection($guides);
     }
 
@@ -62,7 +66,7 @@ class GuideController extends Controller
      */
     public function update(Request $request, Guide $guide)
     {
-        $data = $request->only(['title', 'content', 'game_id']);
+        $data = $request->only(['title', 'content', 'game_id', 'status']);
 
         if ($request->hasFile('image')) {
             // Borrar vieja
@@ -116,7 +120,8 @@ class GuideController extends Controller
      */
     public function topRated()
     {
-        $guides = Guide::with(['user', 'game', 'categories'])
+        $guides = Guide::where('status', 'published')
+            ->with(['user', 'game', 'categories'])
             ->withCount('ratings')
             ->withAvg('ratings', 'score')
             ->get()
@@ -148,10 +153,33 @@ class GuideController extends Controller
     public function favorites()
     {
         $guides = auth()->user()->favorites()
+            ->where('status', 'published')
             ->with(['user', 'game', 'categories'])
             ->latest()
             ->paginate(10);
 
         return GuideResource::collection($guides);
+    }
+
+    /**
+     * Métodos para Administración
+     */
+    public function adminIndex()
+    {
+        $guides = Guide::with(['user', 'game', 'categories'])
+            ->latest()
+            ->paginate(20);
+        return GuideResource::collection($guides);
+    }
+
+    public function updateStatus(Request $request, Guide $guide)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,published,rejected'
+        ]);
+
+        $guide->update(['status' => $request->status]);
+
+        return new GuideResource($guide->load(['user', 'game', 'categories']));
     }
 }

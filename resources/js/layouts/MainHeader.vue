@@ -36,6 +36,10 @@
                                 <router-link to="/app/profile" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300">
                                     <i class="pi pi-user"></i> Mi Perfil
                                 </router-link>
+                                <!-- Botón Panel Admin corregido -->
+                                <router-link v-if="isAdmin" to="/admin" class="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm text-blue-600 dark:text-blue-400">
+                                    <i class="pi pi-cog"></i> Panel Admin
+                                </router-link>
                                 <button @click="logout" class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-sm text-red-600">
                                     <i class="pi pi-sign-out"></i> Cerrar Sesión
                                 </button>
@@ -66,6 +70,12 @@ const auth = authStore();
 const dropdownOpen = ref(false);
 
 const user = computed(() => auth.user);
+const isAdmin = computed(() => {
+    return user.value?.roles?.some(r => 
+        r.name?.toLowerCase().includes('admin') || 
+        r.name?.toLowerCase().includes('super')
+    );
+});
 const toggleDropdown = () => { dropdownOpen.value = !dropdownOpen.value; };
 const logout = () => { logoutAuth(); };
 

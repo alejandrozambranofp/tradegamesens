@@ -30,6 +30,10 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::post('guides', [GuideController::class, 'store']);
     Route::put('guides/{guide}', [GuideController::class, 'update']);
     Route::delete('guides/{guide}', [GuideController::class, 'destroy']);
+
+    // Admin Specific
+    Route::get('admin/guides', [GuideController::class, 'adminIndex']);
+    Route::patch('admin/guides/{guide}/status', [GuideController::class, 'updateStatus']);
 });
 
 // Rutas públicas de lectura (SIEMPRE después de las específicas)

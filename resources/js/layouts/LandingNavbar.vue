@@ -161,10 +161,10 @@ const items = computed(() => [
             { 
                 label: 'Panel Admin', 
                 icon: 'pi pi-cog', 
-                route: '/admin', 
-                visible: authStore().user?.roles?.some(r => r.name.includes('admin')) || false
+                command: () => router.push('/admin'),
+                visible: authStore().user?.roles?.some(r => r.name.toLowerCase().includes('admin')) || false
             },
-            { label: 'Mi Panel', icon: 'pi pi-th-large', route: '/app' },
+            { label: 'Mi Panel', icon: 'pi pi-th-large', command: () => router.push('/app') },
             { separator: true },
             {
                 label: 'Cerrar sesión',

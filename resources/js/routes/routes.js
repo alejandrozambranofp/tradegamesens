@@ -141,61 +141,36 @@ export default [
         ]
     },
 
-    // --- PANEL DE ADMINISTRACIÓN ---
+    // --- PANEL DE ADMINISTRACIÓN (DISEÑO NUEVO V2) ---
     {
         path: '/admin',
-        component: AuthenticatedLayout,
+        component: () => import('../layouts/AdminLayoutV2.vue'),
         beforeEnter: requireAdmin,
-        meta: { breadCrumb: 'Dashboard' },
         children: [
             {
                 name: 'admin.index',
                 path: '',
-                component: () => import('../views/admin/index.vue'),
-                meta: { breadCrumb: 'Admin', hideBreadcrumb: true }
+                component: () => import('../views/admin_v2/Dashboard/AdminDashboard.vue'),
             },
             {
-                name: 'admin.categories.index',
-                path: 'categories',
-                component: () => import('../views/admin/categories/Index.vue'),
-                meta: { breadCrumb: 'Categorías' }
+                name: 'admin.guides.index',
+                path: 'guides',
+                component: () => import('../views/admin_v2/Guides/GuideManager.vue'),
             },
             {
                 name: 'admin.users.index',
                 path: 'users',
-                // Nota: Usas la misma vista que en app.index, está perfecto
-                component: () => import('../views/admin/users/Index.vue'),
-                meta: { breadCrumb: 'Usuarios' }
+                component: () => import('../views/admin_v2/Users/UserList.vue'),
             },
             {
-                name: 'admin.users.create',
-                path: 'users/create',
-                component: () => import('../views/admin/users/Create.vue'),
-                meta: { breadCrumb: 'Crear Usuario' }
-            },
-            {
-                name: 'admin.users.edit',
-                path: 'users/edit/:id',
-                component: () => import('../views/admin/users/Edit.vue'),
-                meta: { breadCrumb: 'Editar Usuario' }
+                name: 'admin.categories.index',
+                path: 'categories',
+                component: () => import('../views/admin_v2/Categories/CategoryList.vue'),
             },
             {
                 name: 'admin.roles.index',
                 path: 'roles',
-                component: () => import('../views/admin/roles/Index.vue'),
-                meta: { breadCrumb: 'Roles' }
-            },
-            {
-                name: 'admin.roles.edit',
-                path: 'roles/edit/:id',
-                component: () => import('../views/admin/roles/Edit.vue'),
-                meta: { breadCrumb: 'Editar Rol' }
-            },
-            {
-                name: 'admin.permissions.index',
-                path: 'permissions',
-                component: () => import('../views/admin/permissions/Index.vue'),
-                meta: { breadCrumb: 'Permisos' }
+                component: () => import('../views/admin_v2/Roles/RoleList.vue'),
             }
         ]
     },

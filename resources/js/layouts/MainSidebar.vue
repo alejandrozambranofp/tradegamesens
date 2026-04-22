@@ -86,6 +86,7 @@ const menuModel = computed(() => {
             label: 'Tu Contenido',
             items: [
                 { label: 'Categorías', icon: 'pi pi-tags', route: '/admin/categories', permission: 'category-list' },
+                { label: 'Gestión de Guías', icon: 'pi pi-file-edit', route: { name: 'admin.guides.index' }, permission: 'all' },
                 // Aquí usamos rutas completas (path) o nombres (name), es más seguro usar 'name' como acordamos en el router
                 { label: 'Mis Guías', icon: 'pi pi-bookmark', route: { name: 'app.guides.my' }, permission: 'all' },
                 { label: 'Guías de la Comunidad', icon: 'pi pi-globe', route: { name: 'app.guides.community' }, permission: 'all' }

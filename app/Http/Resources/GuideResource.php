@@ -20,6 +20,7 @@ class GuideResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
+            'status' => $this->status,
             'content' => $this->content,
             'image_url' => $this->image_url,
             // Mantener la versión robusta que funciona
