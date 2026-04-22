@@ -1,216 +1,223 @@
 <template>
-    <div 
-        class="fixed w-full z-50 border-b border-gray-200 dark:border-gray-800 transition-all duration-300"
-        :class="isDarkTheme ? 'bg-gray-900' : 'bg-white'">
-        <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
-            <router-link to="/" class="flex items-center gap-2">
-                <img src="/images/logo.svg" alt="logo" class="h-10 w-auto"/>
+    <div class="fixed w-full z-50 bg-[#0F172A] border-b border-white/5 transition-all duration-300">
+        <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <!-- Branding -->
+            <router-link to="/" class="flex items-center gap-4 group">
+                <img src="/images/logo.png" alt="TradeGameSense Logo" class="h-10 w-auto transition-transform group-hover:scale-110"/>
+                <span class="text-2xl font-bold text-white font-orbitron tracking-tighter">
+                    Trade<span class="text-[#5369F2]">Game</span>Sense
+                </span>
             </router-link>
 
+            <!-- Desktop Navigation -->
+            <div v-if="isDesktop" class="flex items-center gap-10">
+                <div class="flex items-center gap-8">
+                    <button 
+                        v-for="link in navLinks" 
+                        :key="link.label" 
+                        @click="handleLinkClick(link)"
+                        class="text-sm font-bold text-white hover:text-[#5369F2] uppercase tracking-[0.2em] font-montserrat transition-all relative group"
+                    >
+                        {{ link.label }}
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#5369F2] transition-all group-hover:w-full"></span>
+                    </button>
+                </div>
+                
+                <!-- User Icon Menu -->
+                <div class="flex items-center ml-4">
+                    <button 
+                        type="button" 
+                        @click="toggleUserMenu"
+                        class="w-10 h-10 rounded-full bg-[#1E293B] flex items-center justify-center text-white hover:bg-[#5369F2] transition-all shadow-lg active:scale-95"
+                    >
+                        <i :class="authStore().user?.name ? 'pi pi-user' : 'pi pi-sign-in'" class="text-lg"></i>
+                    </button>
+                    <Menu ref="userMenu" :model="menuItems" popup />
+                </div>
+            </div>
+
+            <!-- Mobile Toggle -->
             <button
                 v-if="!isDesktop"
                 @click="visibleMobileMenu = true"
-                class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <i class="pi pi-bars text-2xl"></i>
+                class="p-2 rounded-lg bg-[#1E293B] text-white hover:bg-[#5369F2] transition-colors"
+            >
+                <i class="pi pi-bars text-xl"></i>
             </button>
-
-            <div v-if="isDesktop" class="flex items-center gap-6">
-                <router-link 
-                    v-for="link in navLinks" 
-                    :key="link.label" 
-                    :to="link.route" 
-                    class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
-                >
-                    {{ link.label }}
-                </router-link>
-                
-                <div class="flex items-center gap-3 pl-6 border-l border-gray-200 dark:border-gray-700">
-                    <LocaleSwitcher />
-                    
-                    <button 
-                        type="button" 
-                        @click="toggleDarkMode"
-                        class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                        <i :class="isDarkTheme ? 'pi-moon' : 'pi-sun'" class="pi text-lg"></i>
-                    </button>
-
-                    <template v-if="!authStore().user?.name">
-                        <router-link to="/login">
-                            <Button label="Login" text size="small" />
-                        </router-link>
-                        <router-link to="/register">
-                            <Button label="Registro" severity="primary" size="small" />
-                        </router-link>
-                    </template>
-
-                    <div v-else>
-                        <button 
-                            type="button" 
-                            @click="toggle"
-                            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                            <Avatar :image="authStore().user.avatar" :label="authStore().user.name[0]" shape="circle" size="small" />
-                            <span class="text-sm font-medium hidden xl:inline">{{ authStore().user?.name }}</span>
-                            <i class="pi pi-chevron-down text-xs"></i>
-                        </button>
-                        <Menu ref="menu" :model="items" popup />
-                    </div>
-                </div>
-            </div>
         </nav>
 
-        <div v-if="visibleMobileMenu" class="fixed inset-0 z-50 lg:hidden">
-            <div class="absolute inset-0 bg-black/50" @click="visibleMobileMenu = false"></div>
-            
-            <div 
-                class="absolute right-0 top-0 h-full w-full sm:w-80 shadow-2xl"
-                :class="isDarkTheme ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'"
-                @click.stop>
-                <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
-                    <div class="flex items-center gap-2">
-                        <img src="/images/logo.svg" alt="logo" class="h-8"/>
-                        <span class="font-bold text-lg">Menu</span>
-                    </div>
-                    <button 
-                        @click="visibleMobileMenu = false"
-                        class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                        <i class="pi pi-times text-xl"></i>
-                    </button>
+        <!-- Mobile Menu (Simplified) -->
+        <Sidebar v-model:visible="visibleMobileMenu" position="right" class="!bg-[#0F172A] !border-l !border-white/5 !w-full sm:!w-[350px]">
+            <template #header>
+                <div class="flex items-center gap-3">
+                    <img src="/images/logo.png" alt="logo" class="h-8"/>
+                    <span class="font-orbitron font-bold text-white">MENU</span>
                 </div>
-
-                <div class="flex flex-col gap-4 p-4 h-[calc(100%-5rem)] overflow-y-auto">
-                    <div class="flex flex-col gap-1">
-                        <router-link 
-                            v-for="link in navLinks"
-                            :key="link.label"
-                            :to="link.route" 
-                            @click="visibleMobileMenu = false"
-                            class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                            <i :class="link.icon"></i>
-                            <span>{{ link.label }}</span>
-                        </router-link>
+            </template>
+            <div class="flex flex-col gap-6 p-4 mt-8">
+                <button 
+                    v-for="link in navLinks" 
+                    :key="link.label"
+                    @click="handleLinkClick(link)"
+                    class="flex items-center gap-4 text-lg font-bold text-white p-3 rounded-xl hover:bg-[#1E293B] transition-colors uppercase tracking-widest font-montserrat"
+                >
+                    {{ link.label }}
+                </button>
+                
+                <div class="border-t border-white/5 my-4"></div>
+                
+                <template v-if="!authStore().user?.name">
+                    <Button label="Iniciar Sesión" icon="pi pi-sign-in" class="!bg-[#5369F2] !border-none !rounded-xl" @click="router.push('/login')" />
+                    <Button label="Registrarse" icon="pi pi-user-plus" outlined class="!text-white !border-white/10 !rounded-xl" @click="router.push('/register')" />
+                </template>
+                <template v-else>
+                    <div class="p-4 rounded-xl bg-[#1E293B] flex items-center gap-3 mb-4">
+                        <Avatar :image="authStore().user.avatar" :label="authStore().user.name[0]" shape="circle" class="!bg-[#5369F2]" />
+                        <div class="flex flex-col">
+                            <span class="text-white font-bold">{{ authStore().user.name }}</span>
+                            <span class="text-gray-400 text-xs">{{ authStore().user.email }}</span>
+                        </div>
                     </div>
-
-                    <div class="border-t border-gray-200 dark:border-gray-800"></div>
-
-                    <div class="flex flex-col gap-3">
-                        <template v-if="!authStore().user?.name">
-                            <router-link to="/login" @click="visibleMobileMenu = false">
-                                <Button label="Iniciar Sesión" outlined class="w-full" />
-                            </router-link>
-                            <router-link to="/register" @click="visibleMobileMenu = false">
-                                <Button label="Registrarse" class="w-full" />
-                            </router-link>
-                        </template>
-                        <template v-else>
-                            <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
-                                <div class="font-medium">{{ authStore().user.name }}</div>
-                                <div class="text-xs text-gray-500">{{ authStore().user.email }}</div>
-                            </div>
-                            <Button label="Ir al Dashboard" icon="pi pi-th-large" outlined @click="navigateToDashboard" />
-                            <Button label="Cerrar Sesión" icon="pi pi-power-off" severity="danger" text @click="handleLogout" />
-                        </template>
-                    </div>
-                    
-                    <div 
-                        class="mt-auto flex items-center justify-between p-3 rounded-lg"
-                        :class="isDarkTheme ? 'bg-gray-800' : 'bg-gray-50'">
-                        <span class="text-sm font-medium">Tema</span>
-                        <button 
-                            @click="toggleDarkMode"
-                            class="p-2 rounded-lg transition-colors"
-                            :class="isDarkTheme ? 'hover:bg-gray-700' : 'hover:bg-gray-200'">
-                            <i :class="isDarkTheme ? 'pi-moon' : 'pi-sun'" class="pi"></i>
-                        </button>
-                    </div>
-                </div>
+                    <Button label="Mi Panel" icon="pi pi-th-large" text class="!text-white !justify-start" @click="router.push('/app/my-guides')" />
+                    <Button label="Cerrar Sesión" icon="pi pi-power-off" severity="danger" text class="!justify-start" @click="handleLogout" />
+                </template>
             </div>
-        </div>
+        </Sidebar>
     </div>
-    
-    <div class="h-20"></div>
 </template>
 
 <script setup>
-import { useLayout } from "@/composables/layout.js";
-import useAuth from "@/composables/auth";
-import { authStore } from "../store/auth";
-import LocaleSwitcher from "../components/LocaleSwitcher.vue";
-import { ref, computed, onBeforeMount, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+import { authStore } from "../store/auth";
+import useAuth from "@/composables/auth";
+
+// PrimeVue components normally imported in main.js but available here
+import Menu from 'primevue/menu';
+import Sidebar from 'primevue/sidebar';
+import Avatar from 'primevue/avatar';
+import Button from 'primevue/button';
 
 const router = useRouter();
-const menu = ref();
+const userMenu = ref();
 const visibleMobileMenu = ref(false);
-const isScrolled = ref(false);
 const isDesktop = ref(window.innerWidth >= 992);
 
-const { processing, logout } = useAuth();
-const { toggleDarkMode, isDarkTheme, setDefaultMode } = useLayout();
+const { logout } = useAuth();
 
-// Aquí hemos añadido los nuevos enlaces
 const navLinks = [
-    { label: 'Inicio', route: '/', icon: 'pi pi-home' },
-    { label: 'Guías', route: { name: 'app.guides.community' }, icon: 'pi pi-globe' },
-    { label: 'Mis Guías', route: { name: 'app.guides.my' }, icon: 'pi pi-bookmark' }
+    { label: 'Juegos', route: { name: 'app.guides.community' }, protected: false },
+    { label: 'Blog', route: null, protected: false },
+    { label: 'Contribuir', route: null, protected: true },
+    { label: 'Mi Sitio', route: { name: 'app.guides.my' }, protected: true }
 ];
 
-const items = computed(() => [
-    {
-        items: [
-            { label: 'Perfil', icon: 'pi pi-user', command: () => router.push('/app/profile') },
-            { 
-                label: 'Panel Admin', 
-                icon: 'pi pi-cog', 
-                route: '/admin', 
-                visible: authStore().user?.roles?.some(r => r.name.includes('admin')) || false
+const menuItems = computed(() => {
+    if (authStore().user?.name) {
+        return [
+            {
+                label: 'MI PANEL',
+                icon: 'pi pi-th-large',
+                command: () => router.push('/app/my-guides')
             },
-            { label: 'Mi Panel', icon: 'pi pi-th-large', route: '/app' },
             { separator: true },
             {
-                label: 'Cerrar sesión',
+                label: 'CERRAR SESIÓN',
                 icon: 'pi pi-power-off',
-                class: 'text-red-500',
-                command: () => {
-                    handleLogout()
-                }
+                class: 'text-red-500 font-bold',
+                command: () => handleLogout()
             }
-        ]
+        ];
+    } else {
+        return [
+            {
+                label: 'INICIAR SESIÓN',
+                icon: 'pi pi-sign-in',
+                command: () => router.push('/login')
+            },
+            {
+                label: 'REGISTRARSE',
+                icon: 'pi pi-user-plus',
+                command: () => router.push('/register')
+            }
+        ];
     }
-]);
+});
 
-const toggle = (event) => {
-    menu.value.toggle(event);
+const handleLinkClick = (link) => {
+    visibleMobileMenu.value = false;
+    
+    // Guest redirection logic
+    if (link.protected && !authStore().user?.name) {
+        router.push('/login');
+        return;
+    }
+
+    if (link.route) {
+        router.push(link.route);
+    } else {
+        // For Blog/Contribute placeholders
+        console.log(`Navigating to ${link.label} (placeholder)`);
+    }
 };
 
-const navigateToDashboard = () => {
-    visibleMobileMenu.value = false;
-    router.push('/app');
-}
+const toggleUserMenu = (event) => {
+    userMenu.value.toggle(event);
+};
 
 const handleLogout = () => {
     visibleMobileMenu.value = false;
     logout();
-}
-
-const handleScroll = () => {
-    isScrolled.value = window.scrollY > 20;
-}
+};
 
 const handleResize = () => {
     isDesktop.value = window.innerWidth >= 992;
-}
+};
 
 onMounted(() => {
-    window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll);
     window.removeEventListener('resize', handleResize);
 });
-
-onBeforeMount(() => {
-    setDefaultMode()
-})
 </script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+.font-orbitron { font-family: 'Orbitron', sans-serif; }
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
+
+:deep(.p-menu) {
+    background: #1E293B !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+:deep(.p-menuitem-link) {
+    color: white !important;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 10px 16px !important;
+    border-radius: 8px !important;
+}
+
+:deep(.p-menuitem-link:hover) {
+    background: rgba(83, 105, 242, 0.1) !important;
+    color: #5369F2 !important;
+}
+
+:deep(.p-menuitem-icon) {
+    color: inherit !important;
+    margin-right: 12px !important;
+}
+
+:deep(.p-sidebar) {
+    padding: 0 !important;
+}
+</style>
