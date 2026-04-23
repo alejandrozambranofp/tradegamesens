@@ -203,7 +203,7 @@ const onSearch = () => {
 };
 
 const onGameClick = (game) => {
-    router.push({ name: 'guides.index', query: { game: game.id } });
+    router.push({ name: 'collections.show', params: { id: game.id } });
 };
 
 const onGuideClick = (guide) => {

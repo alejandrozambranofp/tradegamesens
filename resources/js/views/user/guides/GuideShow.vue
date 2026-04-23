@@ -1,23 +1,30 @@
 <template>
-    <div class="min-h-screen p-4 pb-12" style="background-color: #0b0f19;">
-        <div v-if="guide" class="max-w-5xl mx-auto">
+    <div class="min-h-screen p-4 pt-28 pb-12" style="background-color: #0b0f19;">
+        <div class="max-w-5xl mx-auto">
             
-            <div class="flex justify-between items-center mb-8">
-                <Button icon="pi pi-arrow-left" label="Volver" text @click="$router.back()" class="text-gray-400 hover:bg-gray-800" />
-                <div class="flex gap-3">
+            <!-- Cabecera de Botones Simétricos -->
+            <div class="flex justify-between items-center mb-6 pt-4">
+                <!-- Botón Volver (Izquierda) -->
+                <Button label="Volver" icon="pi pi-chevron-left" @click="$router.back()" 
+                    rounded outlined
+                    class="border-gray-800 transition-all duration-300 font-bold !text-gray-400 hover:!bg-gray-800/30" />
+                
+                <!-- Botón Favoritos (Derecha) -->
+                <div v-if="guide">
                     <Button 
+                        :label="isFavorite ? 'En favoritos' : 'Guardar en favoritos'"
                         :icon="isFavorite ? 'pi pi-star-fill' : 'pi pi-star'" 
                         :severity="isFavorite ? 'warning' : 'secondary'" 
-                        rounded 
-                        outlined 
-                        class="border-gray-800 transition-all duration-300"
-                        :class="{ 'text-yellow-500': isFavorite, 'text-gray-500': !isFavorite }"
+                        rounded outlined 
+                        class="border-gray-800 transition-all duration-300 font-bold"
+                        :class="{ 'text-yellow-500 border-yellow-500/50 bg-yellow-500/5': isFavorite, 'text-gray-400': !isFavorite }"
                         @click="handleFavoriteToggle"
                         :loading="loadingFavorite"
                     />
                 </div>
             </div>
 
+            <div v-if="guide">
             <header class="p-8 md:p-12 rounded-t-3xl border-x border-t border-gray-800 shadow-2xl" style="background-color: #111827;">
                 <div class="flex flex-wrap gap-3 mb-6">
                     <Tag v-if="guide.game" :value="guide.game.title" class="bg-primary/20 text-primary border border-primary/30 px-3 py-1" />
@@ -136,8 +143,9 @@
             </section>
         </div>
 
-        <div v-else class="max-w-4xl mx-auto mt-20 text-center">
-            <ProgressSpinner strokeWidth="3" animationDuration=".5s" />
+            <div v-else class="max-w-4xl mx-auto mt-20 text-center">
+                <ProgressSpinner strokeWidth="3" animationDuration=".5s" />
+            </div>
         </div>
     </div>
 </template>

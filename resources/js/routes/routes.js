@@ -129,8 +129,14 @@ export default [
             {
                 name: 'app.guides.community',
                 path: 'guides',
-                component: () => import('../views/public/guides/GuidesIndex.vue'),
-                meta: { breadCrumb: 'Guías de la Comunidad' },
+                component: () => import('../views/public/collections/CollectionsIndex.vue'),
+                meta: { breadCrumb: 'Explorar Colecciones' },
+            },
+            {
+                name: 'collections.show',
+                path: 'collections/:id',
+                component: () => import('../views/public/collections/CollectionDetail.vue'),
+                meta: { breadCrumb: 'Guías del Juego' },
             },
             {
                 name: 'contribuir',
