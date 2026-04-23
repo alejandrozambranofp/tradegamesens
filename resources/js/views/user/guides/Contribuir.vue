@@ -16,6 +16,24 @@
                 <div class="p-8 rounded-2xl border border-gray-800 shadow-xl" style="background-color: #111827;">
                     <div class="p-fluid flex flex-col gap-6">
                         
+                        <!-- Imagen de Portada -->
+                        <div class="field">
+                            <label class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Imagen de Portada (Obligatoria)</label>
+                            <div class="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-gray-700 rounded-2xl bg-[#0b0f19] hover:border-primary/50 transition-colors cursor-pointer"
+                                @click="coverInput.click()">
+                                <input type="file" ref="coverInput" class="hidden" accept="image/*" @change="onImageSelect" />
+                                
+                                <div v-if="!coverPreview && !guide.image" class="text-center">
+                                    <i class="pi pi-image text-4xl text-gray-600 mb-2"></i>
+                                    <p class="text-gray-500 m-0 text-sm">Haz clic para subir la imagen principal</p>
+                                </div>
+                                
+                                <img v-else :src="coverPreview || guide.image" class="w-full max-h-[300px] object-cover rounded-xl shadow-lg" />
+                                
+                                <Button v-if="coverPreview || guide.image" label="Cambiar Imagen" icon="pi pi-refresh" severity="secondary" size="small" text />
+                            </div>
+                        </div>
+                        
                         <div class="field">
                             <label for="title" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Título de la Guía</label>
                             <InputText id="title" v-model="guide.title" 
@@ -114,8 +132,21 @@ const guide = ref({
     title: '',
     content: '',
     game_id: null,
-    user_id: auth.user?.id
+    user_id: auth.user?.id,
+    image: null // Para guardar la URL de la imagen si ya existe
 });
+
+const coverInput = ref(null);
+const coverFile = ref(null);
+const coverPreview = ref(null);
+
+const onImageSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        coverFile.value = file;
+        coverPreview.value = URL.createObjectURL(file);
+    }
+};
 
 const loadInitialData = async () => {
     try {
@@ -142,7 +173,8 @@ const loadGuideToEdit = async (id) => {
             title: data.title,
             content: data.content,
             game_id: data.game_id,
-            user_id: data.user_id
+            user_id: data.user_id,
+            image: data.image
         };
 
         // Si la guía tiene categorías, extraemos solo los IDs para el MultiSelect
@@ -156,28 +188,46 @@ const loadGuideToEdit = async (id) => {
 };
 
 const saveGuide = async () => {
-    // 1. Validación previa para evitar peticiones mal formadas
+    // 1. Validación previa
     if (!guide.value.title || !guide.value.game_id || !guide.value.content) {
         alert("Por favor, completa todos los campos obligatorios.");
+        return;
+    }
+
+    // Validación de imagen (solo obligatoria si es creación nueva)
+    if (!guide.value.id && !coverFile.value) {
+        alert("Debes subir una imagen de portada para publicar la guía.");
         return;
     }
 
     isSaving.value = true;
     
     try {
-        // 2. Construir el payload exacto que espera tu API
-        const payload = {
-            title: guide.value.title,
-            content: guide.value.content,
-            game_id: guide.value.game_id,
-            categories: selectedCategories.value,
-            user_id: auth.user?.id // El uso de '?' evita el error de "reading id"
-        };
+        // 2. Usamos FormData para poder enviar el archivo
+        const fd = new FormData();
+        fd.append('title', guide.value.title);
+        fd.append('content', guide.value.content);
+        fd.append('game_id', guide.value.game_id);
+        fd.append('user_id', auth.user?.id || 1);
         
-        // 3. Ejecutar la petición según si es edición o creación (SOLO UNA VEZ)
-        const res = guide.value.id 
-            ? await axios.put(`/api/guides/${guide.value.id}`, payload)
-            : await axios.post('/api/guides', payload);
+        if (selectedCategories.value.length) {
+            selectedCategories.value.forEach(id => fd.append('categories[]', id));
+        }
+
+        if (coverFile.value) {
+            fd.append('image', coverFile.value);
+        }
+
+        // Si es edición, Laravel necesita el spoofing de PUT en FormData
+        if (guide.value.id) {
+            fd.append('_method', 'PUT');
+        }
+        
+        // 3. Ejecutar la petición (Usamos POST incluso para PUT por el spoofing de FormData)
+        const url = guide.value.id ? `/api/guides/${guide.value.id}` : '/api/guides';
+        const res = await axios.post(url, fd, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
 
         // Obtenemos la guía desde la respuesta del servidor
         const nuevaGuia = res.data.data || res.data;

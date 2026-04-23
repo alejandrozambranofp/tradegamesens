@@ -18,9 +18,14 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // Actualizar el nombre y la bio
-        $user->name = $request->name;
-        $user->bio = $request->bio;
+        // Actualizar el nombre y la bio (solo si están presentes en el request)
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+        
+        if ($request->has('bio')) {
+            $user->bio = $request->bio;
+        }
 
         // Procesar la imagen si el usuario subió una nueva
         if ($request->hasFile('avatar')) {
