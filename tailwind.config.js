@@ -68,6 +68,7 @@ export default {
             fontFamily: {
                 orbitron: ['Orbitron', 'sans-serif'],
                 inter: ['Inter', 'sans-serif'],
+                montserrat: ['Montserrat', 'sans-serif'],
             },
             spacing: {
                 4.5: '1.125rem',

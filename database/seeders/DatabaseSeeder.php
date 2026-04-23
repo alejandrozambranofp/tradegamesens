@@ -16,7 +16,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(UsersTableSeeder::class);
         $this->call(CategoriesTableSeeder::class);
+        $this->call(GameStorySeeder::class);
         $this->call(GuideSeeder::class);
+        $this->call(RatingSeeder::class);
 
         $this->call(MediaTableSeeder::class);
 
