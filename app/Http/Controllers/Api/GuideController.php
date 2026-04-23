@@ -39,6 +39,11 @@ class GuideController extends Controller
             $data['image'] = '/storage/' . $path;
         }
 
+        // Procesar imágenes base64 pegadas en el contenido
+        if (isset($data['content'])) {
+            $data['content'] = $this->processContentImages($data['content']);
+        }
+
         $guide = Guide::create($data);
 
         if ($request->has('categories')) {
@@ -78,6 +83,11 @@ class GuideController extends Controller
             }
             $path = $request->file('image')->store('guides', 'public');
             $data['image'] = '/storage/' . $path;
+        }
+
+        // Procesar imágenes base64 pegadas en el contenido
+        if (isset($data['content'])) {
+            $data['content'] = $this->processContentImages($data['content']);
         }
 
         if ($request->has('title')) {
@@ -181,5 +191,34 @@ class GuideController extends Controller
         $guide->update(['status' => $request->status]);
 
         return new GuideResource($guide->load(['user', 'game', 'categories']));
+    }
+
+    /**
+     * Procesa el contenido HTML buscando imágenes en base64, las guarda en disco
+     * y devuelve el HTML con las URLs de las imágenes.
+     */
+    private function processContentImages($content)
+    {
+        if (empty($content)) return $content;
+
+        // Buscamos patrones de src="data:image/(png|jpg|jpeg|gif|webp);base64,..."
+        return preg_replace_callback('/src="data:image\/(\w+);base64,([^"]+)"/', function($matches) {
+            $extension = $matches[1];
+            $base64Data = $matches[2];
+            
+            // Decodificar la imagen
+            $data = base64_decode($base64Data);
+            if (!$data) return $matches[0]; // Si falla, dejamos el original
+
+            // Generar un nombre único para la imagen
+            $fileName = 'guide_img_' . uniqid() . '_' . time() . '.' . $extension;
+            $path = 'guides/' . $fileName;
+
+            // Guardar en el disco 'public'
+            Storage::disk('public')->put($path, $data);
+
+            // Devolver la nueva URL para el atributo src
+            return 'src="' . Storage::url($path) . '"';
+        }, $content);
     }
 }

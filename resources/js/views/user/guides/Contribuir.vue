@@ -174,13 +174,7 @@ const saveGuide = async () => {
             user_id: auth.user?.id // El uso de '?' evita el error de "reading id"
         };
         
-        // 3. Ejecutar la petición según si es edición o creación
-        if (guide.value.id) {
-            await axios.put(`/api/guides/${guide.value.id}`, payload);
-        } else {
-            await axios.post('/api/guides', payload);
-        }
-
+        // 3. Ejecutar la petición según si es edición o creación (SOLO UNA VEZ)
         const res = guide.value.id 
             ? await axios.put(`/api/guides/${guide.value.id}`, payload)
             : await axios.post('/api/guides', payload);
