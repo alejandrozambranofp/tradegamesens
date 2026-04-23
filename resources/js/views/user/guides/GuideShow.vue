@@ -106,13 +106,25 @@
                                     <Textarea v-model="userRating.comment" rows="4" autoResize placeholder="¿Qué te ha parecido esta guía?" class="w-full bg-[#0b0f19] border-gray-700 text-white rounded-xl focus:border-primary p-4" />
                                 </div>
 
-                                <Button 
-                                    label="Publicar Valoración" 
-                                    icon="pi pi-send" 
-                                    class="w-full p-4 text-lg font-bold shadow-lg shadow-primary/20" 
-                                    :loading="isSubmitting"
-                                    @click="submitRating"
-                                />
+                                <div class="flex gap-3">
+                                    <Button 
+                                        v-if="existingUserRating"
+                                        label="Borrar" 
+                                        icon="pi pi-trash" 
+                                        severity="danger"
+                                        outlined
+                                        class="flex-1 p-4 font-bold" 
+                                        :loading="isSubmitting"
+                                        @click="deleteRating"
+                                    />
+                                    <Button 
+                                        :label="existingUserRating ? 'Actualizar' : 'Publicar'" 
+                                        icon="pi pi-send" 
+                                        class="flex-1 p-4 font-bold shadow-lg shadow-primary/20" 
+                                        :loading="isSubmitting"
+                                        @click="submitRating"
+                                    />
+                                </div>
                             </div>
                             <div v-else class="text-center py-8">
                                 <p class="text-gray-400 mb-6">Inicia sesión para valorar esta guía</p>
@@ -154,6 +166,11 @@ const userRating = ref({
 });
 const isSubmitting = ref(false);
 
+const existingUserRating = computed(() => {
+    if (!guide.value || !guide.value.ratings || !auth.user) return null;
+    return guide.value.ratings.find(r => r.user_id === auth.user.id);
+});
+
 const fetchGuide = async () => {
     try {
         const response = await axios.get(`/api/guides/${route.params.id}`);
@@ -190,12 +207,33 @@ const submitRating = async () => {
             comment: userRating.value.comment
         });
         
-        // Recargamos la guía para ver la nueva valoración y el promedio actualizado
         await fetchGuide();
-        alert("¡Gracias por tu valoración!");
+        alert(existingUserRating.value ? "¡Valoración actualizada!" : "¡Gracias por tu valoración!");
     } catch (error) {
         console.error("Error al enviar valoración:", error);
         alert("No se pudo guardar la valoración.");
+    } finally {
+        isSubmitting.value = false;
+    }
+};
+
+const deleteRating = async () => {
+    if (!existingUserRating.value) return;
+    if (!confirm("¿Seguro que quieres borrar tu valoración?")) return;
+    
+    isSubmitting.value = true;
+    try {
+        await axios.delete(`/api/ratings/${existingUserRating.value.id}`);
+        
+        // Limpiamos el formulario local
+        userRating.value.score = 0;
+        userRating.value.comment = '';
+        
+        await fetchGuide();
+        alert("Valoración eliminada.");
+    } catch (error) {
+        console.error("Error al borrar valoración:", error);
+        alert("No se pudo borrar la valoración.");
     } finally {
         isSubmitting.value = false;
     }
