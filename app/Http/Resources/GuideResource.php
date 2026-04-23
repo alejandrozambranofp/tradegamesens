@@ -34,6 +34,7 @@ class GuideResource extends JsonResource
 
             // Relaciones
             'user_id'    => $this->user_id,
+            'game_id'    => $this->game_id,
             'user' => $this->whenLoaded('user'),
             'game' => $this->whenLoaded('game'),
             'categories' => $this->whenLoaded('categories'),

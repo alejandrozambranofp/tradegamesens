@@ -174,7 +174,7 @@ const loadGuideToEdit = async (id) => {
             content: data.content,
             game_id: data.game_id,
             user_id: data.user_id,
-            image: data.image
+            image: data.image_url // Usamos image_url que es lo que devuelve el Resource
         };
 
         // Si la guía tiene categorías, extraemos solo los IDs para el MultiSelect

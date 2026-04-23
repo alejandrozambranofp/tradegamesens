@@ -65,7 +65,17 @@
 
             <div v-if="guides.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
                 <div v-for="g in guides" :key="g.id" class="flex">
-                    <div class="bg-[#111827] rounded-2xl border border-gray-800 p-6 flex flex-col gap-4 w-full hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1">
+                    <div class="bg-[#111827] rounded-2xl border border-gray-800 flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 overflow-hidden">
+                        <!-- Imagen destacada -->
+                        <div class="relative h-44 overflow-hidden bg-[#0b0f19] border-b border-gray-800 flex items-center justify-center">
+                            <img v-if="g.image_url" :src="g.image_url" :alt="g.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div v-else class="text-gray-600 flex flex-col items-center gap-2">
+                                <i class="pi pi-image text-3xl opacity-20"></i>
+                                <span class="text-[10px] uppercase tracking-widest font-bold opacity-40">Sin imagen destacada</span>
+                            </div>
+                        </div>
+
+                        <div class="p-6 flex flex-col gap-4">
                         <!-- Título -->
                         <h3 class="text-xl font-bold text-white m-0 line-clamp-2 min-h-[3.5rem] leading-tight">
                             {{ g.title }}
@@ -88,7 +98,8 @@
                     </div>
                 </div>
             </div>
-            <div v-else class="bg-[#111827] rounded-2xl border border-gray-800 p-12 text-center text-gray-500 mx-2">
+        </div>
+        <div v-else class="bg-[#111827] rounded-2xl border border-gray-800 p-12 text-center text-gray-500 mx-2">
                 <i class="pi pi-inbox text-4xl mb-4 block opacity-20"></i>
                 Aún no has creado ninguna guía.
             </div>
@@ -105,7 +116,17 @@
 
             <div v-if="favoriteGuides.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
                 <div v-for="g in favoriteGuides" :key="g.id" class="flex">
-                    <div class="bg-[#111827] rounded-2xl border-l-4 border-l-yellow-500 border-gray-800 p-6 flex flex-col gap-4 w-full hover:border-primary/50 transition-all duration-300 shadow-lg relative">
+                    <div class="bg-[#111827] rounded-2xl border-l-4 border-l-yellow-500 border-gray-800 flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg relative overflow-hidden">
+                        <!-- Imagen destacada -->
+                        <div class="relative h-40 overflow-hidden bg-[#0b0f19] border-b border-gray-800 flex items-center justify-center">
+                            <img v-if="g.image_url" :src="g.image_url" :alt="g.title" class="w-full h-full object-cover" />
+                            <div v-else class="text-gray-600 flex flex-col items-center gap-2">
+                                <i class="pi pi-image text-2xl opacity-20"></i>
+                                <span class="text-[9px] uppercase tracking-widest font-bold opacity-40">Sin imagen destacada</span>
+                            </div>
+                        </div>
+
+                        <div class="p-6 flex flex-col gap-4">
                         <!-- Título -->
                         <h3 class="text-xl font-bold text-white m-0 line-clamp-2 min-h-[3.5rem] leading-tight">
                             {{ g.title }}
@@ -128,6 +149,7 @@
                     </div>
                 </div>
             </div>
+        </div>
             <div v-else class="bg-[#111827] rounded-2xl border border-gray-800 p-12 text-center text-gray-500 mx-2">
                 <i class="pi pi-heart text-4xl mb-4 block opacity-20"></i>
                 No tienes guías guardadas en favoritos.

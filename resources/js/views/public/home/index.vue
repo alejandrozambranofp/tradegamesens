@@ -51,12 +51,16 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div v-for="guide in topGuides" :key="guide.id" class="group bg-[#1E293B] rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/40 transition-all hover:-translate-y-2 duration-500 shadow-2xl flex flex-col h-full cursor-pointer" @click="onGuideClick(guide)">
-                    <div class="relative h-52 overflow-hidden">
-                        <img 
+                    <div class="relative h-52 overflow-hidden bg-[#0b0f19] flex items-center justify-center">
+                        <img v-if="guide.image_url"
                             :src="guide.image_url" 
                             :alt="guide.title" 
                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         />
+                        <div v-else class="text-gray-600 flex flex-col items-center gap-2">
+                            <i class="pi pi-image text-4xl opacity-20"></i>
+                            <span class="text-xs uppercase tracking-widest font-bold opacity-40">Sin imagen destacada</span>
+                        </div>
                         <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#1E293B] to-transparent"></div>
                         <div class="absolute top-3 right-3">
                             <Tag :value="guide.game?.title" severity="info" class="!bg-blue-600/80 !backdrop-blur-md !text-[10px] !uppercase !tracking-tighter" />
