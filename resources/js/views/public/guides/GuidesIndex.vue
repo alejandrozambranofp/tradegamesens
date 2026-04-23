@@ -123,13 +123,7 @@ const loadData = async () => {
         ]);
         
         const todasLasGuias = resGuides.data.data || resGuides.data;
-
-        // FILTRO: Solo guías de OTROS usuarios
-        if (authUser.value) {
-            guides.value = todasLasGuias.filter(g => g.user_id !== authUser.value.id);
-        } else {
-            guides.value = todasLasGuias; // Si no hay login, vemos todo
-        }
+        guides.value = todasLasGuias;
 
         allCategories.value = resCats.data.data || resCats.data;
         allGames.value = resGames.data.data || resGames.data;

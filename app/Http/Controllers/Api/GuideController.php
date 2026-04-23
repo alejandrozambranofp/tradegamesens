@@ -21,7 +21,7 @@ class GuideController extends Controller
         $guides = Guide::where('status', 'published')
             ->with(['user', 'game', 'categories'])
             ->latest()
-            ->paginate(10);
+            ->paginate(50);
         return GuideResource::collection($guides);
     }
 
