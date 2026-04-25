@@ -23,9 +23,10 @@
                                 @click="coverInput.click()">
                                 <input type="file" ref="coverInput" class="hidden" accept="image/*" @change="onImageSelect" />
                                 
-                                <div v-if="!coverPreview && !guide.image" class="text-center">
-                                    <i class="pi pi-image text-4xl text-gray-600 mb-2"></i>
-                                    <p class="text-gray-500 m-0 text-sm">Haz clic para subir la imagen principal</p>
+                                <div v-if="!coverPreview && !guide.image" class="text-center p-8">
+                                    <i class="pi pi-cloud-upload text-5xl text-[#5369F2] mb-4"></i>
+                                    <p class="text-gray-300 font-bold m-0 text-lg">Haz clic para subir la imagen de portada</p>
+                                    <p class="text-gray-500 text-sm mt-2">Formatos recomendados: JPG, PNG, WEBP</p>
                                 </div>
                                 
                                 <img v-else :src="coverPreview || guide.image" class="w-full max-h-[300px] object-cover rounded-xl shadow-lg" />
@@ -41,7 +42,7 @@
                                 class="bg-[#0b0f19] border-gray-700 text-white p-3 rounded-xl focus:border-primary" />
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="field">
                                 <label for="game" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Juego Relacionado</label>
                                 <Dropdown id="game" v-model="guide.game_id" :options="games" optionLabel="title" optionValue="id" 
@@ -53,7 +54,14 @@
                                 <label for="cats" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Categorías</label>
                                 <MultiSelect id="cats" v-model="selectedCategories" :options="categories" optionLabel="name" optionValue="id" 
                                     placeholder="Elige temas" display="chip"
-                                    class="bg-[#0b0f19] border-gray-700 text-white rounded-xl" />
+                                    class="bg-[#0b0f19] border-gray-700 text-white rounded-xl w-full" />
+                            </div>
+
+                            <div class="field">
+                                <label for="difficulty" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Dificultad (Obligatoria)</label>
+                                <Dropdown id="difficulty" v-model="guide.difficulty" :options="['D', 'C', 'B', 'A', 'S']" 
+                                    placeholder="Selecciona un nivel"
+                                    class="bg-[#0b0f19] border-gray-700 text-white rounded-xl w-full" />
                             </div>
                         </div>
 
@@ -66,9 +74,7 @@
 
                         <div class="flex flex-col md:flex-row gap-4 mt-4 pt-6 border-t border-gray-800">
                             <Button label="Publicar Guía Ahora" icon="pi pi-send" @click="saveGuide" :loading="isSaving" 
-                                class="flex-1 p-3 text-lg font-bold shadow-lg shadow-primary/20" />
-                            <Button label="Guardar como Borrador" icon="pi pi-save" severity="secondary" outlined 
-                                class="border-gray-700 text-gray-400 hover:bg-gray-800" />
+                                class="w-full p-4 text-lg font-bold shadow-lg shadow-[#5369F2]/30 !bg-[#5369F2] !border-[#5369F2] hover:!bg-blue-600 transition-all rounded-xl" />
                         </div>
                     </div>
                 </div>
@@ -82,16 +88,16 @@
                     </h3>
                     <ul class="p-0 m-0 list-none flex flex-col gap-4">
                         <li class="flex gap-3">
-                            <i class="pi pi-check-circle text-primary mt-1"></i>
-                            <span class="text-gray-400 text-sm">Usa <strong>negritas</strong> para resaltar puntos clave del combate o rutas.</span>
+                            <i class="pi pi-check-circle text-[#5369F2] mt-1 text-lg"></i>
+                            <span class="text-gray-300 text-sm leading-relaxed">Usa <strong>negritas</strong> para resaltar puntos clave del combate o rutas.</span>
                         </li>
                         <li class="flex gap-3">
-                            <i class="pi pi-check-circle text-primary mt-1"></i>
-                            <span class="text-gray-400 text-sm">Añade listas paso a paso para que sea fácil de leer en móviles.</span>
+                            <i class="pi pi-check-circle text-[#5369F2] mt-1 text-lg"></i>
+                            <span class="text-gray-300 text-sm leading-relaxed">Añade listas paso a paso para que sea fácil de leer en móviles.</span>
                         </li>
                         <li class="flex gap-3">
-                            <i class="pi pi-check-circle text-primary mt-1"></i>
-                            <span class="text-gray-400 text-sm">Si es una guía de trofeos, indica el nivel de dificultad al inicio.</span>
+                            <i class="pi pi-check-circle text-[#5369F2] mt-1 text-lg"></i>
+                            <span class="text-gray-300 text-sm leading-relaxed">Verifica la ortografía antes de publicar tu guía.</span>
                         </li>
                     </ul>
                 </div>
@@ -134,7 +140,8 @@ const guide = ref({
     content: '',
     game_id: null,
     user_id: auth.user?.id,
-    image: null // Para guardar la URL de la imagen si ya existe
+    image: null, // Para guardar la URL de la imagen si ya existe
+    difficulty: null
 });
 
 const coverInput = ref(null);
@@ -235,7 +242,8 @@ const loadGuideToEdit = async (id) => {
             content: data.content,
             game_id: data.game_id,
             user_id: data.user_id,
-            image: data.image_url // Usamos image_url que es lo que devuelve el Resource
+            image: data.image_url, // Usamos image_url que es lo que devuelve el Resource
+            difficulty: data.difficulty
         };
 
         // Si la guía tiene categorías, extraemos solo los IDs para el MultiSelect
@@ -250,8 +258,8 @@ const loadGuideToEdit = async (id) => {
 
 const saveGuide = async () => {
     // 1. Validación previa
-    if (!guide.value.title || !guide.value.game_id || !guide.value.content) {
-        alert("Por favor, completa todos los campos obligatorios.");
+    if (!guide.value.title || !guide.value.game_id || !guide.value.content || !guide.value.difficulty) {
+        alert("Por favor, completa todos los campos obligatorios (incluyendo la Dificultad).");
         return;
     }
 
@@ -269,6 +277,9 @@ const saveGuide = async () => {
         fd.append('title', guide.value.title);
         fd.append('content', guide.value.content);
         fd.append('game_id', guide.value.game_id);
+        if (guide.value.difficulty) {
+            fd.append('difficulty', guide.value.difficulty);
+        }
         fd.append('user_id', auth.user?.id || 1);
         
         if (selectedCategories.value.length) {
@@ -339,6 +350,10 @@ onMounted(async () => {
 }
 .editor-dark-wrapper .ql-editor.ql-blank::before {
     color: #4b5563 !important;
+}
+.editor-dark-wrapper .ql-editor {
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
 }
 
 /* Estilo para los chips de MultiSelect */

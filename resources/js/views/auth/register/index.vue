@@ -1,23 +1,23 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#0b0f19] text-white">
         <div class="max-w-2xl w-full">
             <!-- Logo y título -->
             <div class="text-center mb-8">
                 <h2 class="text-3xl font-bold">
-                    {{ $t('register') }}
+                    Únete a nosotros!
                 </h2>
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p class="mt-2 text-sm text-gray-400">
                     Regístrate para comenzar
                 </p>
             </div>
 
             <!-- Formulario -->
-            <Card>
+            <Card class="!bg-[#111827] !border-gray-800 !text-white shadow-2xl">
                 <template #content>
                     <form @submit.prevent="submitRegister" class="space-y-6">
                         <!-- Name -->
                         <div class="flex flex-col gap-2">
-                            <label for="name" class="font-medium">{{ $t('name') }}</label>
+                            <label for="name" class="font-medium">Nombre</label>
                             <InputText
                                 id="name"
                                 v-model="registerForm.name"
@@ -32,7 +32,7 @@
                         <!-- Surname1 y Surname2 -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="flex flex-col gap-2">
-                                <label for="surname1" class="font-medium">{{ $t('surname1') }}</label>
+                                <label for="surname1" class="font-medium">Primer apellido</label>
                                 <InputText
                                     id="surname1"
                                     v-model="registerForm.surname1"
@@ -45,7 +45,7 @@
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                <label for="surname2" class="font-medium">{{ $t('surname2') }}</label>
+                                <label for="surname2" class="font-medium">Segundo apellido</label>
                                 <InputText
                                     id="surname2"
                                     v-model="registerForm.surname2"
@@ -60,7 +60,7 @@
 
                         <!-- Email -->
                         <div class="flex flex-col gap-2">
-                            <label for="email" class="font-medium">{{ $t('email') }}</label>
+                            <label for="email" class="font-medium">Correo electrónico</label>
                             <InputText
                                 id="email"
                                 type="email"
@@ -76,7 +76,7 @@
                         <!-- Password y Confirm Password -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="flex flex-col gap-2">
-                                <label for="password" class="font-medium">{{ $t('password') }}</label>
+                                <label for="password" class="font-medium">Contraseña</label>
                                 <Password
                                     id="password"
                                     v-model="registerForm.password"
@@ -92,7 +92,7 @@
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                <label for="password_confirmation" class="font-medium">{{ $t('confirm_password') }}</label>
+                                <label for="password_confirmation" class="font-medium">Confirmar contraseña</label>
                                 <Password
                                     id="password_confirmation"
                                     v-model="registerForm.password_confirmation"
@@ -111,20 +111,20 @@
                         <!-- Submit Button -->
                         <Button
                             type="submit"
-                            :label="$t('register')"
+                            label="Registrarse"
                             :loading="processing"
                             :disabled="processing"
-                            class="w-full"
+                            class="w-full !bg-[#5369F2] !border-[#5369F2] hover:!bg-blue-600"
                             size="large"
                         />
 
                         <!-- Login link -->
                         <div class="text-center">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <p class="text-sm text-gray-400">
                                 ¿Ya tienes una cuenta?
                                 <router-link
                                     :to="{ name: 'auth.login' }"
-                                    class="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                                    class="font-medium text-blue-500 hover:text-blue-400 transition-colors"
                                 >
                                     Inicia sesión aquí
                                 </router-link>

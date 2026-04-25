@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen p-6 md:p-12">
+    <div class="min-h-screen p-6 md:p-12 pt-28 md:pt-32 bg-[#0b0f19]">
         <div class="max-w-[1600px] mx-auto">
             <!-- Cabecera de la Página -->
             <div class="mb-12">
@@ -22,7 +22,7 @@
                     
                     <!-- Imagen de Fondo con poca opacidad -->
                     <div class="absolute inset-0 z-0">
-                        <img :src="game.image || '/images/default-game.png'" :alt="game.title" 
+                        <img :src="game.cover || '/images/default-game.png'" :alt="game.title" 
                             class="w-full h-full object-cover opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-40 transition-all duration-700 group-hover:scale-110" />
                         <div class="absolute inset-0 bg-gradient-to-t from-[#111827] via-[#111827]/40 to-transparent"></div>
                     </div>

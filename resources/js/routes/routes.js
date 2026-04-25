@@ -66,6 +66,16 @@ export default [
                 component: () => import('../views/user/guides/GuideShow.vue'),
             },
             {
+                name: 'app.guides.community',
+                path: 'collections',
+                component: () => import('../views/public/collections/CollectionsIndex.vue'),
+            },
+            {
+                name: 'collections.show',
+                path: 'collections/:id',
+                component: () => import('../views/public/collections/CollectionDetail.vue'),
+            },
+            {
                 path: 'login',
                 name: 'auth.login',
                 component: () => import('../views/auth/login/Login.vue'),
@@ -106,13 +116,6 @@ export default [
                 component: () => import('../views/user/guides/MyGuidesIndex.vue'),
             },
             {
-                name: 'app.profile',
-                path: 'profile',
-                // Corregido: Apuntamos al profile que sí existía en tu código original
-                component: () => import('../views/admin/profile/index.vue'),
-                meta: { breadCrumb: 'Perfil' },
-            },
-            {
                 name: 'app.posts',
                 path: 'posts',
                 component: () => import('../views/admin/posts/index.vue'),
@@ -125,18 +128,6 @@ export default [
                 // Restaurado a 'user' (singular) como lo tenías originalmente para que no falle
                 component: () => import('../views/user/guides/MyGuidesIndex.vue'),
                 meta: { breadCrumb: 'Mis Guías' },
-            },
-            {
-                name: 'app.guides.community',
-                path: 'guides',
-                component: () => import('../views/public/collections/CollectionsIndex.vue'),
-                meta: { breadCrumb: 'Explorar Colecciones' },
-            },
-            {
-                name: 'collections.show',
-                path: 'collections/:id',
-                component: () => import('../views/public/collections/CollectionDetail.vue'),
-                meta: { breadCrumb: 'Guías del Juego' },
             },
             {
                 name: 'contribuir',

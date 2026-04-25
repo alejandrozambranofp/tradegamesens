@@ -71,7 +71,7 @@ class GuideController extends Controller
      */
     public function update(Request $request, Guide $guide)
     {
-        $data = $request->only(['title', 'content', 'game_id']);
+        $data = $request->only(['title', 'content', 'game_id', 'difficulty']);
         // Siempre que se edita una guía, vuelve a estado pendiente de revisión
         $data['status'] = 'pending';
 
@@ -178,7 +178,7 @@ class GuideController extends Controller
      */
     public function adminIndex()
     {
-        $guides = Guide::with(['user', 'game', 'categories'])
+        $guides = Guide::with(['user', 'game', 'categories', 'ratings.user'])
             ->latest()
             ->paginate(20);
         return GuideResource::collection($guides);

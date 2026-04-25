@@ -30,6 +30,7 @@ class StoreGuideRequest extends FormRequest
                 Rule::unique('guides', 'slug')->ignore($guideId),
             ],
             'image' => 'required|image|max:2048',
+            'difficulty' => 'required|in:D,C,B,A,S',
         ];
     }
 }

@@ -28,10 +28,11 @@
             <header class="p-8 md:p-12 rounded-t-3xl border-x border-t border-gray-800 shadow-2xl" style="background-color: #111827;">
                 <div class="flex flex-wrap gap-3 mb-6">
                     <Tag v-if="guide.game" :value="guide.game.title" class="bg-primary/20 text-primary border border-primary/30 px-3 py-1" />
+                    <Tag v-if="guide.difficulty" :value="'Dificultad ' + guide.difficulty" :class="getDifficultyClass(guide.difficulty)" class="px-3 py-1 border" />
                     <Tag v-for="cat in guide.categories" :key="cat.id" :value="cat.name" class="bg-gray-800 text-gray-300 border border-gray-700 px-3 py-1" />
                 </div>
 
-                <h1 class="text-4xl md:text-6xl font-black text-white mb-8 leading-tight tracking-tighter">
+                <h1 class="text-4xl md:text-6xl font-black text-white mb-8 leading-tight tracking-tighter break-words">
                     {{ guide.title }}
                 </h1>
 
@@ -102,7 +103,7 @@
                                 Deja tu valoración
                             </h3>
                             
-                            <div v-if="auth.user" class="space-y-6">
+                            <div v-if="auth.user?.name" class="space-y-6">
                                 <div class="flex flex-col items-center gap-3 p-4 bg-gray-900/50 rounded-2xl border border-gray-800">
                                     <span class="text-gray-400 text-sm uppercase tracking-wider">Tu puntuación</span>
                                     <Rating v-model="userRating.score" :cancel="false" class="scale-150 py-2" />
@@ -152,7 +153,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -162,6 +163,7 @@ import Textarea from 'primevue/textarea';
 import { authStore } from "@/store/auth";
 
 const route = useRoute();
+const router = useRouter();
 const auth = authStore();
 const guide = ref(null);
 const isFavorite = ref(false);
@@ -175,7 +177,7 @@ const userRating = ref({
 const isSubmitting = ref(false);
 
 const existingUserRating = computed(() => {
-    if (!guide.value || !guide.value.ratings || !auth.user) return null;
+    if (!guide.value || !guide.value.ratings || !auth.user?.name) return null;
     return guide.value.ratings.find(r => r.user_id === auth.user.id);
 });
 
@@ -190,7 +192,7 @@ const fetchGuide = async () => {
         isFavorite.value = guide.value.is_favorite || false;
 
         // Comprobamos si el usuario actual ya tiene una valoración para pre-rellenar el formulario
-        if (auth.user) {
+        if (auth.user?.name) {
             const existingRating = (guide.value.ratings || []).find(r => r.user_id === auth.user.id);
             if (existingRating) {
                 userRating.value.score = existingRating.score;
@@ -205,6 +207,9 @@ const fetchGuide = async () => {
 };
 
 const submitRating = async () => {
+    if (!auth.user?.name) {
+        return router.push('/login');
+    }
     if (userRating.value.score === 0) return alert("Por favor, selecciona una puntuación");
     
     isSubmitting.value = true;
@@ -219,7 +224,12 @@ const submitRating = async () => {
         alert(existingUserRating.value ? "¡Valoración actualizada!" : "¡Gracias por tu valoración!");
     } catch (error) {
         console.error("Error al enviar valoración:", error);
-        alert("No se pudo guardar la valoración.");
+        if (error.response?.status === 401) {
+            alert("Para poner tu valoración tienes que tener una cuenta. Redirigiendo...");
+            router.push('/login');
+        } else {
+            alert("No se pudo guardar la valoración.");
+        }
     } finally {
         isSubmitting.value = false;
     }
@@ -248,7 +258,9 @@ const deleteRating = async () => {
 };
 
 const handleFavoriteToggle = async () => {
-    if (!auth.user) return alert("Debes iniciar sesión para guardar favoritos");
+    if (!auth.user?.name) {
+        return router.push('/login');
+    }
     
     loadingFavorite.value = true;
     try {
@@ -271,12 +283,30 @@ const formatDate = (date) => {
     });
 };
 
+const getDifficultyClass = (diff) => {
+    switch(diff) {
+        case 'S': return 'bg-red-900/40 text-red-400 border-red-500/30';
+        case 'A': return 'bg-orange-900/40 text-orange-400 border-orange-500/30';
+        case 'B': return 'bg-yellow-900/40 text-yellow-400 border-yellow-500/30';
+        case 'C': return 'bg-blue-900/40 text-blue-400 border-blue-500/30';
+        case 'D': return 'bg-green-900/40 text-green-400 border-green-500/30';
+        default: return 'bg-gray-800 text-gray-300 border-gray-700';
+    }
+};
+
 onMounted(fetchGuide);
 </script>
 
 <style>
-.guide-content { color: #cbd5e1; font-size: 1.15rem; line-height: 1.8; }
-.guide-content h2 { color: #ffffff; font-size: 2rem; font-weight: 800; margin: 2.5rem 0 1.5rem 0; }
-.guide-content p { margin-bottom: 1.5rem; }
-.guide-content img { max-width: 100%; border-radius: 1.5rem; margin: 2.5rem 0; border: 1px solid #1e293b; }
+.guide-content { 
+    color: #cbd5e1; 
+    font-size: 1.15rem; 
+    line-height: 1.8; 
+    overflow-wrap: break-word; 
+    word-break: break-word; 
+}
+.guide-content h2 { color: #ffffff; font-size: 2rem; font-weight: 800; margin: 2.5rem 0 1.5rem 0; overflow-wrap: break-word; }
+.guide-content p { margin-bottom: 1.5rem; overflow-wrap: break-word; }
+.guide-content img { max-width: 100%; height: auto; border-radius: 1.5rem; margin: 2.5rem 0; border: 1px solid #1e293b; }
+.guide-content * { max-width: 100%; overflow-wrap: break-word; }
 </style>

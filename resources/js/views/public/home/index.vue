@@ -63,7 +63,7 @@
                         </div>
                         <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#1E293B] to-transparent"></div>
                         <div class="absolute top-3 right-3">
-                            <Tag :value="guide.game?.title" severity="info" class="!bg-blue-600/80 !backdrop-blur-md !text-[10px] !uppercase !tracking-tighter" />
+                            <Tag :value="guide.game?.title" severity="info" class="!bg-blue-600/80 !backdrop-blur-md !text-white !text-[10px] !uppercase !tracking-tighter" />
                         </div>
                     </div>
                     <div class="p-6 flex flex-col flex-grow space-y-6">

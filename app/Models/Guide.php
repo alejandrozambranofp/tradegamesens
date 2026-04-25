@@ -18,7 +18,8 @@ class Guide extends Model
         'user_id',
         'status',
         'game_id',
-        'image'
+        'image',
+        'difficulty'
     ];
 
     protected $appends = ['image_url'];

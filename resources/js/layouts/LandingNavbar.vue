@@ -24,7 +24,7 @@
                 </div>
                 
                 <!-- User Icon Menu -->
-                <div class="flex items-center ml-4">
+                <div class="flex items-center ml-4 relative">
                     <button 
                         type="button" 
                         @click="toggleUserMenu"
@@ -78,7 +78,7 @@
                             <span class="text-gray-400 text-xs">{{ authStore().user.email }}</span>
                         </div>
                     </div>
-                    <Button label="Mi Panel" icon="pi pi-th-large" text class="!text-white !justify-start" @click="router.push('/app/my-guides')" />
+                    <Button label="Mi Sitio" icon="pi pi-th-large" text class="!text-white !justify-start" @click="router.push('/app/my-guides')" />
                     <Button label="Cerrar Sesión" icon="pi pi-power-off" severity="danger" text class="!justify-start" @click="handleLogout" />
                 </template>
             </div>
@@ -112,27 +112,39 @@ const navLinks = [
     { label: 'Mi Sitio', route: { name: 'app.guides.my' }, protected: true }
 ];
 
-const menuItems = computed(() => [
-    {
-        items: [
-            { label: 'Perfil', icon: 'pi pi-user', command: () => router.push('/app/profile') },
-            { 
-                label: 'Panel Admin', 
-                icon: 'pi pi-cog', 
-                command: () => router.push('/admin'),
-                visible: authStore().user?.roles?.some(r => r.name.toLowerCase().includes('admin')) || false
-            },
-            { label: 'Mi Panel', icon: 'pi pi-th-large', command: () => router.push('/app') },
-            { separator: true },
+const menuItems = computed(() => {
+    if (authStore().user?.name) {
+        return [
             {
-                label: 'CERRAR SESIÓN',
-                icon: 'pi pi-power-off',
-                class: 'text-red-500 font-bold',
-                command: () => handleLogout()
+                items: [
+                    { 
+                        label: 'Panel Admin', 
+                        icon: 'pi pi-cog', 
+                        command: () => router.push('/admin'),
+                        visible: authStore().user?.roles?.some(r => r.name.toLowerCase().includes('admin')) || false
+                    },
+                    { label: 'Mi Sitio', icon: 'pi pi-th-large', command: () => router.push('/app') },
+                    { separator: true },
+                    {
+                        label: 'CERRAR SESIÓN',
+                        icon: 'pi pi-power-off',
+                        class: 'text-red-500 font-bold',
+                        command: () => handleLogout()
+                    }
+                ]
             }
-        ]
+        ];
+    } else {
+        return [
+            {
+                items: [
+                    { label: 'Iniciar Sesión', icon: 'pi pi-sign-in', command: () => router.push('/login') },
+                    { label: 'Registrarse', icon: 'pi pi-user-plus', command: () => router.push('/register') }
+                ]
+            }
+        ];
     }
-]);
+});
 
 const handleLinkClick = (link) => {
     visibleMobileMenu.value = false;

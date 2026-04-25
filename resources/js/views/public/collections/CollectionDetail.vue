@@ -1,8 +1,8 @@
 <template>
-    <div class="min-h-screen bg-[#0b0f19] text-white">
+    <div class="min-h-screen bg-[#0b0f19] text-white pt-20">
         <!-- Hero del Juego -->
         <div class="relative h-64 md:h-80 overflow-hidden border-b border-white/5">
-            <img v-if="game?.image" :src="game.image" class="w-full h-full object-cover opacity-30 blur-sm" />
+            <img v-if="game?.cover" :src="game.cover" class="w-full h-full object-cover opacity-30 blur-sm" />
             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f19] to-transparent"></div>
             
             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
@@ -143,7 +143,9 @@ const viewGuide = (guide) => {
 };
 
 const toggleFavorite = async (guide) => {
-    if (!authStore().user) return alert("Debes iniciar sesión para guardar favoritos");
+    if (!authStore().user?.name) {
+        return router.push('/login');
+    }
     try {
         await axios.post(`/api/guides/${guide.id}/favorite`);
         guide.is_favorite = !guide.is_favorite;

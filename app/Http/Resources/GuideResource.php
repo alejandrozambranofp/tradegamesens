@@ -23,6 +23,7 @@ class GuideResource extends JsonResource
             'status' => $this->status,
             'content' => $this->content,
             'image_url' => $this->image_url,
+            'difficulty' => $this->difficulty,
             // Mantener la versión robusta que funciona
             'is_favorite' => $userId ? $this->favoritedBy()->where('favorite_guide_user.user_id', $userId)->exists() : false,
             'created_at' => $this->created_at ? $this->created_at->format('d/m/Y') : null,

@@ -1,23 +1,23 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 bg-[#0b0f19] text-white">
         <div class="max-w-md w-full">
             <!-- Logo y título -->
             <div class="text-center mb-8">
                 <h2 class="text-3xl font-bold">
-                    Bienvenido a SQL Check!
+                    Bienvenido a TradeGameSense
                 </h2>
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p class="mt-2 text-sm text-gray-400">
                     Inicia sesión para continuar
                 </p>
             </div>
 
             <!-- Formulario -->
-            <Card>
+            <Card class="!bg-[#111827] !border-gray-800 !text-white shadow-2xl">
                 <template #content>
                     <form @submit.prevent="submitLogin" class="space-y-6">
                         <!-- Email -->
                         <div class="flex flex-col gap-2">
-                            <label for="email" class="font-medium">{{ $t('email') }}</label>
+                            <label for="email" class="font-medium">Correo electrónico</label>
                             <InputText
                                 id="email"
                                 type="email"
@@ -34,7 +34,7 @@
 
                         <!-- Password -->
                         <div class="flex flex-col gap-2">
-                            <label for="password" class="font-medium">{{ $t('password') }}</label>
+                            <label for="password" class="font-medium">Contraseña</label>
                             <Password
                                 id="password"
                                 v-model="loginForm.password"
@@ -61,34 +61,34 @@
                                     binary
                                 />
                                 <label for="remember" class="text-sm cursor-pointer">
-                                    {{ $t('remember_me') }}
+                                    Recuérdame
                                 </label>
                             </div>
                             <router-link
                                 :to="{ name: 'auth.forgot-password' }"
-                                class="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                                class="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors"
                             >
-                                {{ $t('forgot_password') }}
+                                ¿Olvidaste tu contraseña?
                             </router-link>
                         </div>
 
                         <!-- Submit Button -->
                         <Button
                             type="submit"
-                            :label="$t('login')"
+                            label="Iniciar Sesión"
                             :loading="processing"
                             :disabled="processing"
-                            class="w-full"
+                            class="w-full !bg-[#5369F2] !border-[#5369F2] hover:!bg-blue-600"
                             size="large"
                         />
 
                         <!-- Register link -->
                         <div class="text-center">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <p class="text-sm text-gray-400">
                                 ¿No tienes una cuenta?
                                 <router-link
                                     :to="{ name: 'auth.register' }"
-                                    class="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                                    class="font-medium text-blue-500 hover:text-blue-400 transition-colors"
                                 >
                                     Regístrate aquí
                                 </router-link>
