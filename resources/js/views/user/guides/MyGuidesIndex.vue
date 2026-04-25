@@ -68,6 +68,13 @@
                     <div class="bg-[#111827] rounded-2xl border border-gray-800 flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 overflow-hidden">
                         <!-- Imagen destacada -->
                         <div class="relative h-44 overflow-hidden bg-[#0b0f19] border-b border-gray-800 flex items-center justify-center">
+                            <!-- Etiqueta de Estado -->
+                            <div class="absolute top-3 right-3 z-10 shadow-md rounded-md">
+                                <Tag v-if="g.status === 'published'" severity="success" value="Aprobada" />
+                                <Tag v-else-if="g.status === 'pending'" value="Pendiente" class="!bg-yellow-500 !text-yellow-950 border-none font-bold" />
+                                <Tag v-else-if="g.status === 'rejected'" severity="danger" value="Rechazada" />
+                            </div>
+
                             <img v-if="g.image_url" :src="g.image_url" :alt="g.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             <div v-else class="text-gray-600 flex flex-col items-center gap-2">
                                 <i class="pi pi-image text-3xl opacity-20"></i>
@@ -198,7 +205,7 @@
             </div>
             <div class="field mb-4">
                 <label for="content" class="font-bold block mb-2">Contenido</label>
-                <Editor v-model="guide.content" editorStyle="height: 400px" />
+                <Editor v-model="guide.content" editorStyle="height: 400px" @load="onEditorLoad" />
             </div>
             <div class="field mb-4">
                 <label class="font-bold block mb-2">Categorías</label>
@@ -217,6 +224,7 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { authStore } from "@/store/auth";
+import Swal from 'sweetalert2';
 
 // PrimeVue
 import Button from 'primevue/button';
@@ -254,7 +262,6 @@ const selectedCategories = ref([]);
 
 const authUser = computed(() => auth.user);
 
-// CARGA DE DATOS
 const loadData = async () => {
     if (!authUser.value?.id) return;
 
@@ -273,6 +280,65 @@ const loadData = async () => {
     } catch (e) {
         console.error("Error al obtener datos:", e);
     }
+};
+
+const onEditorLoad = ({ instance }) => {
+    // Evitar que se añadan múltiples listeners si el editor se recarga
+    if (instance.root._hasPasteListener) return;
+    instance.root._hasPasteListener = true;
+
+    // Anular el pegado automático de base64 de Quill para evitar duplicados
+    instance.clipboard.addMatcher('IMG', (node, delta) => {
+        if (node.src && node.src.startsWith('data:')) {
+            delta.ops = []; // Vaciar el delta para que no inserte nada
+        }
+        return delta;
+    });
+
+    instance.root.addEventListener('paste', async (e) => {
+        const clipboardData = e.clipboardData || window.clipboardData;
+        if (!clipboardData) return;
+
+        const items = clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                if (!file) continue;
+
+                // Evitar que Quill inserte la imagen en base64 y detener otros eventos
+                e.preventDefault();
+                e.stopPropagation();
+
+                const fd = new FormData();
+                fd.append('image', file);
+
+                try {
+                    const res = await axios.post('/api/images/upload', fd, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    
+                    const url = res.data.url;
+                    
+                    const range = instance.getSelection(true);
+                    instance.insertEmbed(range.index, 'image', url);
+                    instance.setSelection(range.index + 1);
+                } catch (err) {
+                    console.error("Error al subir imagen pegada:", err);
+                    Swal.fire({
+                        title: 'Ups...',
+                        text: 'La imagen es demasiado grande. El límite es de 10MB.',
+                        icon: 'error',
+                        background: '#111827',
+                        color: '#fff',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                }
+
+                // Salir del bucle para no subir/insertar la imagen 2 veces si hay varios tipos en el portapapeles
+                break;
+            }
+        }
+    });
 };
 
 // LÓGICA PERFIL

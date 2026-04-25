@@ -71,7 +71,9 @@ class GuideController extends Controller
      */
     public function update(Request $request, Guide $guide)
     {
-        $data = $request->only(['title', 'content', 'game_id', 'status']);
+        $data = $request->only(['title', 'content', 'game_id']);
+        // Siempre que se edita una guía, vuelve a estado pendiente de revisión
+        $data['status'] = 'pending';
 
         if ($request->hasFile('image')) {
             // Borrar vieja

@@ -60,7 +60,7 @@
                         <div class="field">
                             <label class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Contenido de la Guía</label>
                             <div class="editor-dark-wrapper border border-gray-700 rounded-xl overflow-hidden">
-                                <Editor v-model="guide.content" editorStyle="height: 450px" placeholder="Escribe aquí tu nueva guia..." />
+                                <Editor v-model="guide.content" editorStyle="height: 450px" @load="onEditorLoad" placeholder="Escribe aquí tu nueva guia..." />
                             </div>
                         </div>
 
@@ -110,6 +110,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router'; // Importamos useRoute para leer el ID
 import axios from 'axios';
 import { authStore } from "@/store/auth";
+import Swal from 'sweetalert2';
 
 // Componentes de PrimeVue
 import InputText from 'primevue/inputtext';
@@ -146,6 +147,66 @@ const onImageSelect = (event) => {
         coverFile.value = file;
         coverPreview.value = URL.createObjectURL(file);
     }
+};
+
+const onEditorLoad = ({ instance }) => {
+    // Evitar que se añadan múltiples listeners si el editor se recarga
+    if (instance.root._hasPasteListener) return;
+    instance.root._hasPasteListener = true;
+
+    // Anular el pegado automático de base64 de Quill para evitar duplicados
+    instance.clipboard.addMatcher('IMG', (node, delta) => {
+        if (node.src && node.src.startsWith('data:')) {
+            delta.ops = []; // Vaciar el delta para que no inserte nada
+        }
+        return delta;
+    });
+
+    instance.root.addEventListener('paste', async (e) => {
+        const clipboardData = e.clipboardData || window.clipboardData;
+        if (!clipboardData) return;
+
+        const items = clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                if (!file) continue;
+
+                // Evitar que Quill inserte la imagen en base64 y detener otros eventos
+                e.preventDefault();
+                e.stopPropagation();
+
+                const fd = new FormData();
+                fd.append('image', file);
+
+                try {
+                    const res = await axios.post('/api/images/upload', fd, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    
+                    const url = res.data.url;
+                    
+                    // Insertar la URL en el editor
+                    const range = instance.getSelection(true);
+                    instance.insertEmbed(range.index, 'image', url);
+                    instance.setSelection(range.index + 1);
+                } catch (err) {
+                    console.error("Error al subir imagen pegada:", err);
+                    Swal.fire({
+                        title: 'Ups...',
+                        text: 'La imagen es demasiado grande. El límite es de 10MB.',
+                        icon: 'error',
+                        background: '#111827',
+                        color: '#fff',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                }
+
+                // Salir del bucle para no subir/insertar la imagen 2 veces si hay varios tipos en el portapapeles
+                break;
+            }
+        }
+    });
 };
 
 const loadInitialData = async () => {

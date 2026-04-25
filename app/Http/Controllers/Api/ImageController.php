@@ -11,9 +11,9 @@ class ImageController extends Controller
 {
     public function upload(Request $request)
     {
-        // 1. Validamos que sea una imagen real y que no pase de 2MB
+        // 1. Validamos que sea una imagen real y que no pase de 10MB
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240'
         ]);
 
         if ($request->hasFile('image')) {
