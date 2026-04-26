@@ -20,16 +20,16 @@ class GameStorySeeder extends Seeder
             ['title' => 'Soulsborne', 'cover' => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop'],
             ['title' => 'Tomb Rider', 'cover' => 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?q=80&w=2000&auto=format&fit=crop'],
             ['title' => 'God of War', 'cover' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2000&auto=format&fit=crop'], // generic gaming images below
-            ['title' => 'The Witcher 3: Wild Hunt', 'cover' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2000&auto=format&fit=crop'],
-            ['title' => 'Horizon Zero Dawn', 'cover' => 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=2000&auto=format&fit=crop'],
-            ['title' => 'The Last of Us Part I', 'cover' => 'https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2000&auto=format&fit=crop'],
-            ['title' => 'The Last of Us Part II', 'cover' => 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2000&auto=format&fit=crop'],
+            ['title' => 'The Witcher 3', 'cover' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2000&auto=format&fit=crop'],
+            ['title' => 'Horizon Zero Down', 'cover' => 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=2000&auto=format&fit=crop'],
+            ['title' => 'The Last of Us Part 1', 'cover' => 'https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2000&auto=format&fit=crop'],
+            ['title' => 'The Last of Us Part 2', 'cover' => 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2000&auto=format&fit=crop'],
             ['title' => 'Red Dead Redemption 2', 'cover' => 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?q=80&w=2000&auto=format&fit=crop'],
             ['title' => 'Cyberpunk 2077', 'cover' => 'https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?q=80&w=2000&auto=format&fit=crop'],
-            ['title' => 'Mass Effect Legendary Edition', 'cover' => 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?q=80&w=2000&auto=format&fit=crop'],
+            ['title' => 'Mass Effect', 'cover' => 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?q=80&w=2000&auto=format&fit=crop'],
             ['title' => 'BioShock', 'cover' => 'https://images.unsplash.com/photo-1627856013091-fed6e4e047ce?q=80&w=2000&auto=format&fit=crop'],
-            ['title' => 'Uncharted 4: A Thief\'s End', 'cover' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2000&auto=format&fit=crop'],
-            ['title' => 'Persona 5 Royal', 'cover' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2000&auto=format&fit=crop'],
+            ['title' => 'Uncharted 4', 'cover' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2000&auto=format&fit=crop'],
+            ['title' => 'Persona 5', 'cover' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2000&auto=format&fit=crop'],
             ['title' => 'Final Fantasy VII Remake', 'cover' => 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=2000&auto=format&fit=crop'],
             ['title' => 'Detroit: Become Human', 'cover' => 'https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2000&auto=format&fit=crop'],
             ['title' => 'Heavy Rain', 'cover' => 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2000&auto=format&fit=crop'],
@@ -68,9 +68,17 @@ class GameStorySeeder extends Seeder
         ];
 
         foreach ($games as $game) {
+            $localCover = '/images/collections/' . strtoupper($game['title']) . '.webp';
+            $cover = $game['cover'];
+            
+            // Si existe la imagen local con el nombre del juego en mayúsculas, la usamos
+            if (file_exists(public_path($localCover))) {
+                $cover = $localCover;
+            }
+
             Game::updateOrCreate(
                 ['slug' => Str::slug($game['title'])],
-                ['title' => $game['title'], 'cover' => $game['cover']]
+                ['title' => $game['title'], 'cover' => $cover]
             );
         }
     }
