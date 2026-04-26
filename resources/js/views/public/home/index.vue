@@ -21,18 +21,67 @@
                     Únete a la comunidad definitiva de guías, trucos y estrategias validadas por jugadores.
                 </p>
 
-                <!-- Search Bar -->
-                <div class="relative max-w-xl mx-auto w-full mt-8">
-                    <form @submit.prevent="onSearch" class="flex items-center bg-white rounded-full p-1 shadow-2xl transition-all focus-within:ring-4 focus-within:ring-blue-500/20">
-                        <InputText 
-                            v-model="searchQuery" 
-                            placeholder="¿De qué juego buscas ayuda?" 
-                            class="flex-grow !border-none !bg-transparent !text-gray-800 !py-2 !pl-6 placeholder:!text-gray-400 !shadow-none focus:!ring-0 font-inter font-normal text-base"
-                        />
+                <!-- Search Bar with Integrated Filters (Original Style) -->
+                <div class="relative max-w-4xl mx-auto w-full mt-8">
+                    <form @submit.prevent="onSearch" class="flex items-center bg-white rounded-full p-2 shadow-2xl transition-all focus-within:ring-4 focus-within:ring-blue-500/20">
+                        <!-- Search Input -->
+                        <div class="flex-grow flex items-center px-4">
+                            <i class="pi pi-search text-gray-400 mr-2"></i>
+                            <InputText 
+                                v-model="searchStore.query" 
+                                placeholder="¿De qué juego buscas ayuda?" 
+                                class="!w-full !border-none !bg-transparent !text-gray-800 !py-2 placeholder:!text-gray-400 !shadow-none focus:!ring-0 font-inter font-normal text-base"
+                            />
+                        </div>
+
+                        <!-- Separator -->
+                        <div class="h-8 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+
+                        <!-- Game Select -->
+                        <div class="hidden sm:block">
+                            <Select 
+                                v-model="searchStore.gameId" 
+                                :options="allGames" 
+                                optionLabel="title" 
+                                optionValue="id" 
+                                placeholder="Juego" 
+                                class="!border-none !bg-transparent !text-gray-600 !w-32 md:!w-40 focus:!ring-0"
+                                filter
+                                showClear
+                                :pt="{
+                                    root: '!bg-transparent',
+                                    label: '!py-1 !text-sm !font-semibold',
+                                    trigger: '!w-6'
+                                }"
+                            />
+                        </div>
+
+                        <!-- Separator -->
+                        <div class="h-8 w-px bg-gray-200 mx-2 hidden md:block"></div>
+
+                        <!-- Category Select -->
+                        <div class="hidden md:block">
+                            <Select 
+                                v-model="searchStore.categoryId" 
+                                :options="allCategories" 
+                                optionLabel="name" 
+                                optionValue="id" 
+                                placeholder="Categoría" 
+                                class="!border-none !bg-transparent !text-gray-600 !w-32 md:!w-40 focus:!ring-0"
+                                showClear
+                                :pt="{
+                                    root: '!bg-transparent',
+                                    label: '!py-1 !text-sm !font-semibold',
+                                    trigger: '!w-6'
+                                }"
+                            />
+                        </div>
+
+                        <!-- Search Button -->
                         <Button 
                             type="submit"
                             icon="pi pi-search" 
-                            class="!rounded-full !w-10 !h-10 !bg-[#4F46E5] !border-none !flex-shrink-0 !shadow-lg hover:!scale-105 transition-transform"
+                            class="!rounded-full !w-12 !h-12 !bg-[#4F46E5] !border-none !flex-shrink-0 !shadow-lg hover:!scale-105 transition-transform ml-2"
                         />
                     </form>
                 </div>
@@ -176,30 +225,36 @@ import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Avatar from 'primevue/avatar';
 import Carousel from 'primevue/carousel';
+import Select from 'primevue/select';
+import { useSearchStore } from '@/store/search';
 
 const router = useRouter();
-const searchQuery = ref('');
+const searchStore = useSearchStore();
 
 // Dynamic Data
 const topGuides = ref([]);
 const collections = ref([]);
+const allGames = ref([]);
+const allCategories = ref([]);
 
 const fetchInitialData = async () => {
     try {
-        const [resTop, resGames] = await Promise.all([
+        const [resTop, resGames, resCats] = await Promise.all([
             axios.get('/api/guides/top-rated'),
-            axios.get('/api/games')
+            axios.get('/api/games'),
+            axios.get('/api/categories')
         ]);
         topGuides.value = resTop.data.data || resTop.data;
         collections.value = resGames.data.data || resGames.data;
+        allGames.value = resGames.data.data || resGames.data;
+        allCategories.value = resCats.data.data || resCats.data;
     } catch (e) {
         console.error("Error fetching home data", e);
     }
 };
 
 const onSearch = () => {
-    if (!searchQuery.value.trim()) return;
-    router.push({ name: 'guides.index', query: { search: searchQuery.value } });
+    router.push({ name: 'community.guides' });
 };
 
 const onGameClick = (game) => {

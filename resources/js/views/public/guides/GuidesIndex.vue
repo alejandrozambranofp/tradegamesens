@@ -1,8 +1,17 @@
 <template>
     <div class="card p-4">
-        <div class="flex justify-content-between align-items-center mb-4">
+        <div class="flex flex-column md:flex-row justify-content-between align-items-center mb-4 gap-4">
             <h2 class="m-0 font-bold text-2xl text-gray-800 dark:text-white">Guías de la Comunidad</h2>
+            
+            <!-- Filter Feedback -->
+            <div v-if="searchStore.query || searchStore.gameId || searchStore.categoryId" class="flex align-items-center gap-2 bg-blue-50 dark:bg-blue-900/20 p-2 px-3 border-round-xl border-1 border-blue-100 dark:border-blue-800">
+                <span class="text-sm text-blue-700 dark:text-blue-300 font-inter">
+                    <i class="pi pi-filter mr-1"></i>
+                    Filtrando resultados...
+                </span>
+                <Button label="Limpiar Filtros" icon="pi pi-times" size="small" text severity="secondary" @click="searchStore.clearFilters()" class="!py-1 !px-2" />
             </div>
+        </div>
 
         <DataTable :value="guides" paginator :rows="10" dataKey="id" class="p-datatable-sm shadow-2 border-round overflow-hidden">
             <template #empty> <div class="p-4 text-center">No se encontraron guías de otros usuarios.</div> </template>
@@ -97,8 +106,11 @@ import Editor from 'primevue/editor';
 // RUTA CORREGIDA: Usamos el alias '@' para ir directo a resources/js
 import { authStore } from "@/store/auth";
 
+import { useSearchStore } from '@/store/search';
+
 const router = useRouter();
 const auth = authStore();
+const searchStore = useSearchStore();
 
 const guides = ref([]);
 const allCategories = ref([]);
@@ -116,8 +128,16 @@ const isSuperAdmin = computed(() => {
 
 const loadData = async () => {
     try {
+        const params = {
+            search: searchStore.query || undefined,
+            game_id: searchStore.gameId || undefined,
+            category_id: searchStore.categoryId || undefined
+        };
+
+        console.log('[GuidesIndex] Cargando guías con parámetros:', params);
+
         const [resGuides, resCats, resGames] = await Promise.all([
-            axios.get('/api/guides'),
+            axios.get('/api/guides', { params }),
             axios.get('/api/categories'),
             axios.get('/api/games')
         ]);
@@ -132,6 +152,12 @@ const loadData = async () => {
         console.error("Error cargando datos en Comunidad:", error);
     }
 };
+
+// Recargar cuando cambien los filtros en el store (incluso al inicio)
+import { watch } from 'vue';
+watch(() => [searchStore.query, searchStore.gameId, searchStore.categoryId], () => {
+    loadData();
+}, { deep: true, immediate: true });
 
 const onEditorLoad = ({ instance }) => {
     instance.root.addEventListener('paste', async (event) => {

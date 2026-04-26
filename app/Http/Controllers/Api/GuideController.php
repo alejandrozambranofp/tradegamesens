@@ -15,13 +15,33 @@ class GuideController extends Controller
     /**
      * Lista todas las guías con sus relaciones.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Solo guías publicadas para el público general
-        $guides = Guide::where('status', 'published')
-            ->with(['user', 'game', 'categories'])
-            ->latest()
-            ->paginate(50);
+        // Debug para ver qué filtros llegan en el log de laravel
+        \Log::info('Filtros buscador:', $request->all());
+
+        $query = Guide::where('status', 'published')
+            ->with(['user', 'game', 'categories']);
+
+        // Filtro por búsqueda de texto (título)
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        // Filtro por Juego
+        if ($request->filled('game_id')) {
+            $query->where('game_id', $request->game_id);
+        }
+
+        // Filtro por Categoría
+        if ($request->filled('category_id')) {
+            $categoryId = $request->category_id;
+            $query->whereHas('categories', function($q) use ($categoryId) {
+                $q->where('categories.id', $categoryId);
+            });
+        }
+
+        $guides = $query->latest()->paginate(50);
         return GuideResource::collection($guides);
     }
 

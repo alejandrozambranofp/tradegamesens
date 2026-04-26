@@ -76,6 +76,11 @@ export default [
                 component: () => import('../views/public/collections/CollectionDetail.vue'),
             },
             {
+                name: 'community.guides',
+                path: 'community',
+                component: () => import('../views/public/guides/GuidesIndex.vue'),
+            },
+            {
                 path: 'login',
                 name: 'auth.login',
                 component: () => import('../views/auth/login/Login.vue'),
