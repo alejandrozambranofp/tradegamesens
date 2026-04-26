@@ -81,11 +81,19 @@ class User extends Authenticatable implements HasMedia
 
     public function getAvatarUrlAttribute()
     {
+        // 1. Intentar obtener desde Spatie Media Library
+        $media = $this->getFirstMediaUrl('avatars');
+        if ($media) {
+            return $media;
+        }
+
+        // 2. Fallback al campo avatar (por compatibilidad o rutas directas)
         if ($this->avatar) {
-            // asset() convierte '/storage/avatars/foto.jpg' en 'http://localhost:8000/storage/avatars/foto.jpg'
             return asset($this->avatar);
         }
-        return null;
+
+        // 3. Imagen por defecto
+        return asset('images/placeholder-avatar.jpg');
     }
 
     public function favorites()

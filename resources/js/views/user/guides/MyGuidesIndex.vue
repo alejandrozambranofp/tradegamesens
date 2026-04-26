@@ -166,15 +166,17 @@
         <!-- DIÁLOGOS -->
         
         <!-- Dialog: Editar Perfil (Personalizar) -->
-        <Dialog v-model:visible="profileDialog" header="Personalizar Perfil" modal class="p-fluid" :style="{width: '500px'}">
-            <div class="flex flex-column align-items-center gap-3 mb-4">
-                <Avatar 
-                    :image="avatarPreview || authUser?.avatar_url" 
-                    size="xlarge" shape="circle" 
-                    class="w-8rem h-8rem shadow-2 border-2 border-primary" 
-                />
-                <input type="file" ref="fileInput" accept="image/*" class="hidden" @change="onFileChange" />
-                <Button label="Cambiar Foto" icon="pi pi-camera" size="small" outlined @click="fileInput?.click()" />
+        <Dialog v-model:visible="profileDialog" header="Personalizar Perfil" modal class="admin-v2-dialog" :style="{width: '500px'}">
+            <div class="flex flex-column align-items-center gap-4 mb-6">
+                <div class="relative group">
+                    <Avatar 
+                        :image="avatarPreview || authUser?.avatar_url" 
+                        size="xlarge" shape="circle" 
+                        class="w-8rem h-8rem shadow-2 border-4 border-primary/20 bg-[#0b0f19]" 
+                    />
+                </div>
+                <Button label="Cambiar Foto" icon="pi pi-images" size="small" outlined @click="showAvatarGrid = true" class="w-full" />
+                <p class="text-[10px] text-gray-500 text-center uppercase tracking-widest font-bold">Elige un avatar oficial</p>
             </div>
 
             <div class="field mb-3">
@@ -190,6 +192,25 @@
             <template #footer>
                 <Button label="Cancelar" icon="pi pi-times" text @click="profileDialog = false" />
                 <Button label="Guardar Perfil" icon="pi pi-check" :loading="isSavingProfile" @click="saveProfile" />
+            </template>
+        </Dialog>
+
+        <!-- Dialog: Selector de Avatares Oficiales -->
+        <Dialog v-model:visible="showAvatarGrid" header="Avatares Oficiales" modal class="admin-v2-dialog" :style="{width: '600px'}">
+            <div class="grid grid-cols-3 md:grid-cols-4 gap-4 p-4">
+                <div v-for="a in predefinedAvatars" :key="a.name" 
+                    class="cursor-pointer group relative aspect-square rounded-2xl overflow-hidden border-2 transition-all"
+                    :class="tempAvatarName === a.name ? 'border-primary' : 'border-gray-800 hover:border-gray-600'"
+                    @click="tempAvatarName = a.name">
+                    <img :src="a.url" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div v-if="tempAvatarName === a.name" class="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                        <i class="pi pi-check text-white text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            <template #footer>
+                <Button label="Cancelar" icon="pi pi-times" text severity="secondary" @click="showAvatarGrid = false" />
+                <Button label="Confirmar" icon="pi pi-check" @click="confirmPredefinedAvatar" :disabled="!tempAvatarName" />
             </template>
         </Dialog>
 
@@ -252,8 +273,17 @@ const isSavingProfile = ref(false);
 const profileName = ref('');
 const profileBio = ref('');
 const avatarPreview = ref(null);
-const avatarFile = ref(null);
-const fileInput = ref(null);
+const showAvatarGrid = ref(false);
+const predefinedAvatars = ref([]);
+const tempAvatarName = ref(null);
+const selectedAvatarFilename = ref(null);
+
+const fetchPredefinedAvatars = async () => {
+    try {
+        const res = await axios.get('/api/avatars/predefined');
+        predefinedAvatars.value = res.data;
+    } catch (e) { console.error(e); }
+};
 
 // Estados Guía
 const guideDialog = ref(false);
@@ -267,7 +297,7 @@ const loadData = async () => {
 
     try {
         const [resGuides, resFavs, resCats, resGames] = await Promise.all([
-            axios.get('/api/guides/my-guides'), // Usamos el endpoint específico
+            axios.get('/api/guides/my-guides'), 
             axios.get('/api/guides/favorites'),
             axios.get('/api/categories'),
             axios.get('/api/games')
@@ -283,14 +313,12 @@ const loadData = async () => {
 };
 
 const onEditorLoad = ({ instance }) => {
-    // Evitar que se añadan múltiples listeners si el editor se recarga
     if (instance.root._hasPasteListener) return;
     instance.root._hasPasteListener = true;
 
-    // Anular el pegado automático de base64 de Quill para evitar duplicados
     instance.clipboard.addMatcher('IMG', (node, delta) => {
         if (node.src && node.src.startsWith('data:')) {
-            delta.ops = []; // Vaciar el delta para que no inserte nada
+            delta.ops = [];
         }
         return delta;
     });
@@ -305,7 +333,6 @@ const onEditorLoad = ({ instance }) => {
                 const file = items[i].getAsFile();
                 if (!file) continue;
 
-                // Evitar que Quill inserte la imagen en base64 y detener otros eventos
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -333,8 +360,6 @@ const onEditorLoad = ({ instance }) => {
                         confirmButtonColor: '#3b82f6'
                     });
                 }
-
-                // Salir del bucle para no subir/insertar la imagen 2 veces si hay varios tipos en el portapapeles
                 break;
             }
         }
@@ -346,33 +371,56 @@ const openEditProfile = () => {
     profileName.value = authUser.value.name || '';
     profileBio.value = authUser.value.bio || '';
     avatarPreview.value = null;
+    selectedAvatarFilename.value = null;
+    tempAvatarName.value = null;
     profileDialog.value = true;
+    fetchPredefinedAvatars();
 };
 
-const onFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        avatarFile.value = file;
-        avatarPreview.value = URL.createObjectURL(file);
+const confirmPredefinedAvatar = () => {
+    const avatar = predefinedAvatars.value.find(a => a.name === tempAvatarName.value);
+    if (avatar) {
+        avatarPreview.value = avatar.url;
+        selectedAvatarFilename.value = avatar.name;
     }
+    showAvatarGrid.value = false;
 };
 
 const saveProfile = async () => {
     if (!profileName.value) return;
     isSavingProfile.value = true;
-    const fd = new FormData();
-    fd.append('name', profileName.value);
-    fd.append('bio', profileBio.value || '');
-    if (avatarFile.value) fd.append('avatar', avatarFile.value);
-
+    
     try {
-        const res = await axios.post('/api/user/profile', fd, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        auth.user = res.data.data;
-        localStorage.setItem('user', JSON.stringify(res.data.data));
+        // 1. Guardar datos básicos
+        const fd = new FormData();
+        fd.append('name', profileName.value);
+        fd.append('bio', profileBio.value || '');
+        
+        const resProfile = await axios.post('/api/user/profile', fd);
+        
+        // 2. Si seleccionó un avatar predefinido, guardarlo vía Spatie
+        if (selectedAvatarFilename.value) {
+            const resAvatar = await axios.post('/api/user/select-avatar', { 
+                filename: selectedAvatarFilename.value 
+            });
+            auth.user = resAvatar.data.data;
+        } else {
+            auth.user = resProfile.data.data;
+        }
+
+        localStorage.setItem('user', JSON.stringify(auth.user));
         avatarPreview.value = null;
+        selectedAvatarFilename.value = null;
         profileDialog.value = false;
+        
+        Swal.fire({
+            title: '¡Perfil Actualizado!',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false,
+            background: '#111827',
+            color: '#fff'
+        });
     } catch (e) {
         console.error(e);
     } finally {

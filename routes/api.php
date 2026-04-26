@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\AvatarController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\GuideController;
@@ -68,6 +69,8 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
 Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('/user', [ProfileController::class, 'user']);
     Route::post('/user/profile', [ProfileController::class, 'update']); 
+    Route::get('/avatars/predefined', [AvatarController::class, 'getPredefinedAvatars']);
+    Route::post('/user/select-avatar', [AvatarController::class, 'selectAvatar']);
 
     Route::apiResource('users', UserController::class);
     Route::post('users/updateimg', [UserController::class, 'updateimg']);
