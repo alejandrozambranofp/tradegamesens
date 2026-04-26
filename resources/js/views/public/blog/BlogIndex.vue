@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen bg-[#0F172A] pt-32 pb-20 px-6">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-3xl mx-auto">
             <!-- Header -->
             <header class="text-center mb-16 space-y-4">
                 <h1 class="text-4xl md:text-6xl font-black text-white font-orbitron tracking-tighter uppercase">
@@ -15,7 +15,7 @@
             <!-- Blog Post -->
             <article class="bg-[#1E293B] rounded-[40px] border border-white/5 overflow-hidden shadow-2xl transition-all hover:border-[#5369F2]/30 group">
                 <!-- Hero Image Placeholder -->
-                <div class="h-64 md:h-96 bg-[#0b0f19] relative overflow-hidden flex items-center justify-center">
+                <div class="h-56 md:h-72 bg-[#0b0f19] relative overflow-hidden flex items-center justify-center">
                     <img src="/images/home/home-hero.png" alt="Bienvenida" class="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-1000" />
                     <div class="absolute inset-0 bg-gradient-to-t from-[#1E293B] to-transparent"></div>
                     <div class="absolute bottom-8 left-8">
@@ -26,8 +26,6 @@
                 <div class="p-8 md:p-12 space-y-6">
                     <div class="flex items-center gap-4 text-xs text-gray-400 font-bold uppercase tracking-widest">
                         <span>26 Abril, 2026</span>
-                        <span class="w-1 h-1 bg-gray-600 rounded-full"></span>
-                        <span>Admin</span>
                     </div>
 
                     <h2 class="text-3xl md:text-4xl font-bold text-white font-orbitron leading-tight">
