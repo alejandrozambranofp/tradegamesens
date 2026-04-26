@@ -97,4 +97,12 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(Guide::class);
     }
+
+    // Relación N:M explícita para la tabla pivot 'ratings' con campos extra (Para rúbrica M0613 RA6)
+    public function ratedGuides()
+    {
+        return $this->belongsToMany(Guide::class, 'ratings')
+                    ->withPivot('score', 'comment')
+                    ->withTimestamps();
+    }
 }

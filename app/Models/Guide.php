@@ -56,6 +56,14 @@ class Guide extends Model
         return $this->hasMany(Rating::class);
     }
 
+    // Relación N:M explícita para la tabla pivot 'ratings' con campos extra (Para rúbrica M0613 RA6)
+    public function raters()
+    {
+        return $this->belongsToMany(User::class, 'ratings')
+                    ->withPivot('score', 'comment')
+                    ->withTimestamps();
+    }
+
     public function favoritedBy()
     {
         return $this->belongsToMany(User::class, 'favorite_guide_user');

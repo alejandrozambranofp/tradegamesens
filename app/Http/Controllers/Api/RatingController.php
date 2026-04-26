@@ -16,17 +16,20 @@ class RatingController extends Controller
     public function store(StoreRatingRequest $request)
     {
         $data = $request->validated();
+        $user = $request->user();
         
-        $rating = Rating::updateOrCreate(
-            [
-                'user_id' => $request->user()->id,
-                'guide_id' => $data['guide_id']
-            ],
-            [
+        // Uso de Eloquent Pivot con sync (con detach=false) para cumplir con el requisito de tabla pivot con campos extra
+        $user->ratedGuides()->sync([
+            $data['guide_id'] => [
                 'score' => $data['score'],
                 'comment' => $data['comment'] ?? null
             ]
-        );
+        ], false);
+
+        // Recuperar el modelo Rating para devolverlo en el recurso
+        $rating = Rating::where('user_id', $user->id)
+            ->where('guide_id', $data['guide_id'])
+            ->first();
 
         // Optionally eager load the user for the resource
         $rating->load('user');
