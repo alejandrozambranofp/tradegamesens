@@ -19,6 +19,15 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+Route::get('/stats', function() {
+    return response()->json([
+        'visitas' => '77K', // Hardcoded as requested
+        'colecciones' => \App\Models\Game::count(),
+        'usuarios' => \App\Models\User::count(),
+        'guias' => \App\Models\Guide::count()
+    ]);
+});
+
 // --- RUTAS DE GUÍAS (Orden crucial: Específicas primero) ---
 Route::get('guides/top-rated', [GuideController::class, 'topRated']);
 

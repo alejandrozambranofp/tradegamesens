@@ -239,15 +239,24 @@ const allCategories = ref([]);
 
 const fetchInitialData = async () => {
     try {
-        const [resTop, resGames, resCats] = await Promise.all([
+        const [resTop, resGames, resCats, resStats] = await Promise.all([
             axios.get('/api/guides/top-rated'),
             axios.get('/api/games'),
-            axios.get('/api/categories')
+            axios.get('/api/categories'),
+            axios.get('/api/stats')
         ]);
         topGuides.value = resTop.data.data || resTop.data;
         collections.value = resGames.data.data || resGames.data;
         allGames.value = resGames.data.data || resGames.data;
         allCategories.value = resCats.data.data || resCats.data;
+        
+        // Update stats
+        stats.value = [
+            { label: 'Total de visitas', value: resStats.data.visitas, icon: 'pi pi-eye' },
+            { label: 'Colecciones', value: resStats.data.colecciones, icon: 'pi pi-bookmark' },
+            { label: 'Usuarios', value: resStats.data.usuarios, icon: 'pi pi-user-plus' },
+            { label: 'Total de guías', value: resStats.data.guias, icon: 'pi pi-file-edit' }
+        ];
     } catch (e) {
         console.error("Error fetching home data", e);
     }
@@ -266,10 +275,10 @@ const onGuideClick = (guide) => {
 };
 
 const stats = ref([
-    { label: 'Total de visitas', value: '103K', icon: 'pi pi-eye' },
-    { label: 'Colecciones', value: '9', icon: 'pi pi-bookmark' },
-    { label: 'Usuarios', value: '765', icon: 'pi pi-user-plus' },
-    { label: 'Total de guías', value: '202', icon: 'pi pi-file-edit' }
+    { label: 'Total de visitas', value: '77K', icon: 'pi pi-eye' },
+    { label: 'Colecciones', value: '...', icon: 'pi pi-bookmark' },
+    { label: 'Usuarios', value: '...', icon: 'pi pi-user-plus' },
+    { label: 'Total de guías', value: '...', icon: 'pi pi-file-edit' }
 ]);
 
 onMounted(() => {

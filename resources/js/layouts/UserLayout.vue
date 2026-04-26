@@ -1,20 +1,23 @@
 <template>
-    <div class="min-h-screen bg-[#0b0f19] text-white">
+    <div class="min-h-screen bg-[#0b0f19] text-white flex flex-col">
         <!-- Menú Global (el de la Home) -->
         <LandingNavbar />
 
         <!-- Espaciado para el Navbar fijo -->
-        <div class="pt-24 pb-12">
+        <div class="pt-24 pb-12 flex-grow">
             <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Aquí se cargan las vistas (Mis Guías, Comunidad, etc.) -->
                 <router-view />
             </div>
         </div>
+
+        <LandingFooter />
     </div>
 </template>
 
 <script setup>
 import LandingNavbar from './LandingNavbar.vue';
+import LandingFooter from './LandingFooter.vue';
 import { onMounted } from 'vue';
 
 onMounted(() => {
