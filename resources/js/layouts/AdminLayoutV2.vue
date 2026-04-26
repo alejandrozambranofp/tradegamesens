@@ -70,6 +70,7 @@ const menuItems = [
     { label: 'Guías', icon: 'pi pi-file-edit', to: '/admin/guides' },
     { label: 'Usuarios', icon: 'pi pi-users', to: '/admin/users' },
     { label: 'Categorías', icon: 'pi pi-tags', to: '/admin/categories' },
+    { label: 'Juegos', icon: 'pi pi-desktop', to: '/admin/games' },
     { label: 'Roles', icon: 'pi pi-shield', to: '/admin/roles' },
 ];
 

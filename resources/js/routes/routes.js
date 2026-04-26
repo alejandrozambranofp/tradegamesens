@@ -175,6 +175,11 @@ export default [
                 component: () => import('../views/admin_v2/Categories/CategoryList.vue'),
             },
             {
+                name: 'admin.games.index',
+                path: 'games',
+                component: () => import('../views/admin_v2/Games/GameList.vue'),
+            },
+            {
                 name: 'admin.roles.index',
                 path: 'roles',
                 component: () => import('../views/admin_v2/Roles/RoleList.vue'),

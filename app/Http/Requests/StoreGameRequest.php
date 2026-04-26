@@ -21,13 +21,11 @@ class StoreGameRequest extends FormRequest
      */
     public function rules()
     {
-        // Esto permite que el título se repita solo si es la misma guía que estamos editando
-        $guideId = $this->route('guide'); // Obtiene el ID de la URL
+        $gameId = $this->route('game') ? $this->route('game')->id : null;
 
         return [
-            'title' => 'required|string|max:255|unique:guides,title,' . $guideId,
-            'content' => 'required',
-            'game_id' => 'required|exists:games,id',
+            'title' => 'required|string|max:255|unique:games,title,' . $gameId,
+            'cover' => $this->hasFile('cover') ? 'image|mimes:webp|max:5120' : 'nullable|string',
         ];
     }
 }
