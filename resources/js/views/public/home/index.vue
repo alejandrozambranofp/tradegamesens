@@ -254,7 +254,7 @@ const fetchInitialData = async () => {
 };
 
 const onSearch = () => {
-    router.push({ name: 'community.guides' });
+    router.push({ name: 'app.guides.community' });
 };
 
 const onGameClick = (game) => {

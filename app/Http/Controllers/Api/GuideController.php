@@ -23,9 +23,15 @@ class GuideController extends Controller
         $query = Guide::where('status', 'published')
             ->with(['user', 'game', 'categories']);
 
-        // Filtro por búsqueda de texto (título)
+        // Filtro por búsqueda de texto (título de guía o título del juego)
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhereHas('game', function($qGame) use ($search) {
+                      $qGame->where('title', 'like', '%' . $search . '%');
+                  });
+            });
         }
 
         // Filtro por Juego
