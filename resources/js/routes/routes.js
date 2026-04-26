@@ -81,6 +81,11 @@ export default [
                 component: () => import('../views/public/guides/GuidesIndex.vue'),
             },
             {
+                name: 'blog.index',
+                path: 'blog',
+                component: () => import('../views/public/blog/BlogIndex.vue'),
+            },
+            {
                 path: 'login',
                 name: 'auth.login',
                 component: () => import('../views/auth/login/Login.vue'),

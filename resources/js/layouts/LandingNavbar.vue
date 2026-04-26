@@ -107,7 +107,7 @@ const { logout } = useAuth();
 
 const navLinks = [
     { label: 'Juegos', route: { name: 'app.guides.community' }, protected: false },
-    { label: 'Blog', route: null, protected: false },
+    { label: 'Blog', route: { name: 'blog.index' }, protected: false },
     { label: 'Contribuir', route: { name: 'contribuir' }, protected: true },
     { label: 'Mi Sitio', route: { name: 'app.guides.my' }, protected: true }
 ];
