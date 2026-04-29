@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\UserResource;
 
 class AvatarController extends Controller
@@ -43,19 +44,31 @@ class AvatarController extends Controller
         ]);
 
         $user = Auth::user();
-        $filePath = public_path('images/avatars/predefined/' . $request->filename);
+        $sourcePath = public_path('images/avatars/predefined/' . $request->filename);
 
-        if (!File::exists($filePath)) {
+        if (!File::exists($sourcePath)) {
             return response()->json(['message' => 'Avatar no encontrado'], 404);
         }
 
-        // Limpiar avatares anteriores de Spatie
-        $user->clearMediaCollection('avatars');
+        // Definir el destino en storage/app/public/avatars
+        $extension = File::extension($sourcePath);
+        $newFilename = 'avatar_' . $user->id . '_' . time() . '.' . $extension;
+        $destinationPath = 'avatars/' . $newFilename;
 
-        // Añadir el nuevo desde el path local
-        $user->addMedia($filePath)
-             ->preservingOriginal()
-             ->toMediaCollection('avatars');
+        // Eliminar el avatar anterior si existe
+        if ($user->avatar) {
+            $oldPath = str_replace('/storage/', '', $user->avatar);
+            if (Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+        }
+
+        // Copiar el archivo al storage público
+        Storage::disk('public')->put($destinationPath, File::get($sourcePath));
+
+        // Actualizar el campo avatar en el usuario
+        $user->avatar = '/storage/' . $destinationPath;
+        $user->save();
 
         return new UserResource($user->load('roles'));
     }

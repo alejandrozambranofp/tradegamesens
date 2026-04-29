@@ -128,11 +128,22 @@ class UserController extends Controller
         $user = User::find($request->id);
       
         if($request->hasFile('picture')) {
-            $user->media()->delete();
-            $media = $user->addMediaFromRequest('picture')->preservingOriginal()->toMediaCollection('images-users');
+            // Eliminar el archivo físico anterior si existe
+            if ($user->avatar) {
+                $oldPath = str_replace('/storage/', '', $user->avatar);
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldPath)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                }
+            }
 
+            // Guardar la nueva imagen en 'avatars' dentro de storage/app/public
+            $path = $request->file('picture')->store('avatars', 'public');
+
+            // Guardar la ruta que se usará en la base de datos
+            $user->avatar = '/storage/' . $path;
+            $user->save();
         }
-        $user =  User::with('media')->find($request->id);
+
         return new UserResource($user);
     }
 

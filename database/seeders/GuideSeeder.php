@@ -34,6 +34,7 @@ class GuideSeeder extends Seeder
             ['title' => 'Logros difíciles de conseguir', 'content' => 'Para sacar el platino necesitarás mucha paciencia y seguir estos pasos...'],
             ['title' => 'Análisis de parches y cambios recientes', 'content' => 'La última actualización ha nerfeado algunas armas y bufeado otras...'],
             ['title' => 'Speedrun: Cómo pasarte el juego en 2 horas', 'content' => 'Esta ruta está diseñada para saltarse las cinemáticas y los combates lentos...'],
+
         ];
 
         foreach ($guideTemplates as $template) {
@@ -41,12 +42,12 @@ class GuideSeeder extends Seeder
             $game = $games->random();
 
             $guide = Guide::create([
-                'title'   => $template['title'] . ' en ' . $game->title,
-                'slug'    => Str::slug($template['title'] . '-' . $game->title . '-' . rand(1, 999)),
+                'title' => $template['title'] . ' en ' . $game->title,
+                'slug' => Str::slug($template['title'] . '-' . $game->title . '-' . rand(1, 999)),
                 'content' => $template['content'] . ' <br><br> Contenido generado automáticamente para pruebas.',
                 'user_id' => $user->id,
                 'game_id' => $game->id,
-                'status'  => 'published',
+                'status' => 'published',
             ]);
 
             if ($categories->count() > 0) {

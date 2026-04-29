@@ -11,20 +11,23 @@
                     <div class="w-20 h-1 bg-primary mt-4 rounded-full"></div>
                 </div>
 
-                <!-- Buscador Integrado -->
-                <div class="relative max-w-2xl w-full">
-                    <div class="flex items-center bg-[#111827] rounded-2xl p-1.5 border border-white/5 shadow-2xl focus-within:border-primary/50 transition-all">
+                <!-- Buscador Integrado (Igual que en la Home) -->
+                <div class="relative max-w-4xl w-full">
+                    <form @submit.prevent="loadGuides" class="flex items-center bg-white rounded-full p-2 shadow-2xl transition-all focus-within:ring-4 focus-within:ring-[#4F46E5]/20">
+                        <!-- Search Input -->
                         <div class="flex-grow flex items-center px-4">
-                            <i class="pi pi-search text-gray-500 mr-2"></i>
+                            <i class="pi pi-search text-gray-400 mr-2"></i>
                             <InputText 
                                 v-model="searchStore.query" 
-                                placeholder="Buscar guías..." 
-                                class="!w-full !border-none !bg-transparent !text-white !py-2 placeholder:!text-gray-500 !shadow-none focus:!ring-0 font-inter text-sm"
+                                placeholder="¿Qué buscas hoy?" 
+                                class="!w-full !border-none !bg-transparent !text-gray-800 !py-2 placeholder:!text-gray-400 !shadow-none focus:!ring-0 font-inter font-normal text-base"
                             />
                         </div>
-                        
-                        <div class="h-6 w-px bg-white/10 mx-2 hidden sm:block"></div>
 
+                        <!-- Separator -->
+                        <div class="h-8 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+
+                        <!-- Game Select -->
                         <div class="hidden sm:block">
                             <Select 
                                 v-model="searchStore.gameId" 
@@ -32,19 +35,21 @@
                                 optionLabel="title" 
                                 optionValue="id" 
                                 placeholder="Juego" 
-                                class="!border-none !bg-transparent !text-gray-400 !w-32 focus:!ring-0"
+                                class="!border-none !bg-transparent !text-gray-600 !w-32 md:!w-40 focus:!ring-0"
                                 filter
                                 showClear
                                 :pt="{
                                     root: '!bg-transparent',
-                                    label: '!py-1 !text-xs !font-bold !uppercase !tracking-wider',
+                                    label: '!py-1 !text-sm !font-semibold',
                                     trigger: '!w-6'
                                 }"
                             />
                         </div>
 
-                        <div class="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>
+                        <!-- Separator -->
+                        <div class="h-8 w-px bg-gray-200 mx-2 hidden md:block"></div>
 
+                        <!-- Category Select -->
                         <div class="hidden md:block">
                             <Select 
                                 v-model="searchStore.categoryId" 
@@ -52,22 +57,23 @@
                                 optionLabel="name" 
                                 optionValue="id" 
                                 placeholder="Categoría" 
-                                class="!border-none !bg-transparent !text-gray-400 !w-32 focus:!ring-0"
+                                class="!border-none !bg-transparent !text-gray-600 !w-32 md:!w-40 focus:!ring-0"
                                 showClear
                                 :pt="{
                                     root: '!bg-transparent',
-                                    label: '!py-1 !text-xs !font-bold !uppercase !tracking-wider',
+                                    label: '!py-1 !text-sm !font-semibold',
                                     trigger: '!w-6'
                                 }"
                             />
                         </div>
 
+                        <!-- Search Button -->
                         <Button 
+                            type="submit"
                             icon="pi pi-search" 
-                            class="!rounded-xl !w-10 !h-10 !bg-primary !border-none !flex-shrink-0 !shadow-lg hover:!scale-105 transition-transform ml-2"
-                            @click="loadGuides"
+                            class="!rounded-full !w-12 !h-12 !bg-[#4F46E5] !border-none !flex-shrink-0 !shadow-lg hover:!scale-105 transition-transform ml-2"
                         />
-                    </div>
+                    </form>
                 </div>
             </div>
 

@@ -23,7 +23,6 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'bio' => $this->bio,
             'roles' => RoleResource::collection($this->whenLoaded('roles')),
-            'avatar' => count($this->getMedia('*')) > 0 ? $this->getMedia('*')[0]->getUrl() : null,
             'avatar_url' => $this->avatar_url,
             'guides_count' => $this->guides()->count(),
             'created_at' => $this->created_at?->toDateString()

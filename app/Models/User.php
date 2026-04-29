@@ -8,14 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements HasMedia
+class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -57,42 +54,18 @@ class User extends Authenticatable implements HasMedia
         $this->notify(new UserResetPasswordNotification($token));
     }
 
-
-
-
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('images/users')
-            ->useFallbackUrl('/images/placeholder.jpg')
-            ->useFallbackPath(public_path('/images/placeholder.jpg'));
-    }
-
-    public function registerMediaConversions(Media $media = null): void
-    {
-        if (env('RESIZE_IMAGE') === true) {
-
-            $this->addMediaConversion('resized-image')
-                ->width(env('IMAGE_WIDTH', 300))
-                ->height(env('IMAGE_HEIGHT', 300));
-        }
-    }
-
     protected $appends = ['avatar_url']; // Esto hace que 'avatar_url' aparezca en el JSON enviado a Vue
 
     public function getAvatarUrlAttribute()
     {
-        // 1. Intentar obtener desde Spatie Media Library
-        $media = $this->getFirstMediaUrl('avatars');
-        if ($media) {
-            return $media;
-        }
-
-        // 2. Fallback al campo avatar (por compatibilidad o rutas directas)
+        // Usar el campo avatar (rutas directas en storage/app/public/avatars)
         if ($this->avatar) {
+            // Asegurarse de que la ruta sea correcta para asset()
+            // Si ya empieza con /storage/, asset() lo manejará bien.
             return asset($this->avatar);
         }
 
-        // 3. Imagen por defecto
+        // Imagen por defecto
         return asset('images/placeholder-avatar.jpg');
     }
 

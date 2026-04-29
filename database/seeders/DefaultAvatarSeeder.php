@@ -31,13 +31,27 @@ class DefaultAvatarSeeder extends Seeder
         foreach ($users as $user) {
             // Pick a random avatar from the folder
             $randomFile = $files[array_rand($files)];
-            $filePath = $randomFile->getRealPath();
+            $sourcePath = $randomFile->getRealPath();
+            $extension = File::extension($sourcePath);
+            
+            // Definir el destino en storage/app/public/avatars
+            $newFilename = 'avatar_' . $user->id . '_' . time() . '.' . $extension;
+            $destinationPath = 'avatars/' . $newFilename;
 
-            // Clear existing and add the new one
-            $user->clearMediaCollection('avatars');
-            $user->addMedia($filePath)
-                 ->preservingOriginal()
-                 ->toMediaCollection('avatars');
+            // Eliminar el avatar anterior si existe
+            if ($user->avatar) {
+                $oldPath = str_replace('/storage/', '', $user->avatar);
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldPath)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                }
+            }
+
+            // Copiar el archivo al storage público
+            \Illuminate\Support\Facades\Storage::disk('public')->put($destinationPath, File::get($sourcePath));
+
+            // Actualizar el campo avatar en el usuario
+            $user->avatar = '/storage/' . $destinationPath;
+            $user->save();
         }
 
         $this->command->info("Avatares asignados correctamente a " . $users->count() . " usuarios.");
