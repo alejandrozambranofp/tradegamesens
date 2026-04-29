@@ -4,7 +4,7 @@
         <div class="col-span-1 md:col-span-4 lg:col-span-3">
             <Card class="h-full border-gray-800 bg-[#111827]">
                 <template #title>
-                    <div class="text-white text-lg font-bold">Tu Perfil</div>
+                    <div class="text-white text-xl font-black font-orbitron tracking-widest uppercase">Tu <span class="text-[#5369F2]">Perfil</span></div>
                 </template>
                 <template #content>
                     <div class="flex flex-col items-center gap-6">

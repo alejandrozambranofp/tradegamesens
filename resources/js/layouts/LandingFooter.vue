@@ -3,7 +3,7 @@
         <!-- Glow effects para mantener la estética gaming -->
         <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#5369F2]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <div class="max-w-[1400px] mx-auto px-6 relative z-10">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-16">
                 
                 <!-- Columna 1: Branding -->

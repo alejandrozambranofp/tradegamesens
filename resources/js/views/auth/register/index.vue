@@ -22,6 +22,7 @@
                                 id="name"
                                 v-model="registerForm.name"
                                 placeholder="Nombre completo"
+                                class="!bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none"
                                 :invalid="!!validationErrors?.name"
                             />
                             <small v-if="validationErrors?.name" class="text-red-500">
@@ -37,6 +38,7 @@
                                     id="surname1"
                                     v-model="registerForm.surname1"
                                     placeholder="Primer apellido"
+                                    class="!bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none"
                                     :invalid="!!validationErrors?.surname1"
                                 />
                                 <small v-if="validationErrors?.surname1" class="text-red-500">
@@ -50,6 +52,7 @@
                                     id="surname2"
                                     v-model="registerForm.surname2"
                                     placeholder="Segundo apellido"
+                                    class="!bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none"
                                     :invalid="!!validationErrors?.surname2"
                                 />
                                 <small v-if="validationErrors?.surname2" class="text-red-500">
@@ -66,6 +69,7 @@
                                 type="email"
                                 v-model="registerForm.email"
                                 placeholder="tu@email.com"
+                                class="!bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none"
                                 :invalid="!!validationErrors?.email"
                             />
                             <small v-if="validationErrors?.email" class="text-red-500">
@@ -83,6 +87,7 @@
                                     placeholder="••••••••"
                                     toggleMask
                                     :feedback="false"
+                                    inputClass="w-full !bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none"
                                     :invalid="!!validationErrors?.password"
                                     fluid
                                 />
@@ -99,6 +104,7 @@
                                     placeholder="••••••••"
                                     toggleMask
                                     :feedback="false"
+                                    inputClass="w-full !bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none"
                                     :invalid="!!validationErrors?.password_confirmation"
                                     fluid
                                 />

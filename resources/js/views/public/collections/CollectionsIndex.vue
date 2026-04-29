@@ -4,11 +4,10 @@
             <!-- Cabecera de la Página -->
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
                 <div class="flex-shrink-0">
-                    <h1 class="text-4xl font-black text-white font-orbitron tracking-widest mb-2 uppercase">
-                        Explorar <span class="text-primary">Juegos</span>
+                    <h1 class="text-4xl font-bold text-white font-orbitron tracking-tighter mb-2 uppercase">
+                        Explorar <span class="text-[#5369F2]">Juegos</span>
                     </h1>
                     <p class="text-gray-400 font-medium">Encuentra las mejores guías para tus títulos favoritos.</p>
-                    <div class="w-20 h-1 bg-primary mt-4 rounded-full"></div>
                 </div>
 
                 <!-- Buscador Integrado (Igual que en la Home) -->
@@ -274,6 +273,10 @@ onMounted(loadInitialData);
 </script>
 
 <style scoped>
+.font-orbitron {
+    font-family: 'Orbitron', sans-serif !important;
+}
+
 .collection-card {
     backdrop-filter: blur(10px);
 }
@@ -288,11 +291,6 @@ onMounted(loadInitialData);
 .animate-shine {
     animation: shine 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.font-orbitron {
-    font-family: 'Orbitron', sans-serif;
-}
-
 /* Animación suave para los items de la lista */
 .group\/item:hover {
     transform: translateX(4px);

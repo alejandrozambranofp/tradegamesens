@@ -1,11 +1,16 @@
     <div class="min-h-screen pt-28 md:pt-32 bg-[#0b0f19]">
         <div class="max-w-7xl mx-auto px-6 pb-20">
+            <div class="mb-12">
+                <h1 class="text-4xl font-bold text-white font-orbitron tracking-tighter mb-2 uppercase">
+                    Guías de la <span class="text-[#5369F2]">Comunidad</span>
+                </h1>
+                <p class="text-gray-400 font-medium">Explora el conocimiento compartido por otros jugadores.</p>
+            </div>
+
             <div class="card p-6 bg-[#111827] border border-white/5 rounded-3xl">
-        <div class="flex flex-column md:flex-row justify-content-between align-items-center mb-4 gap-4">
-            <h2 class="m-0 font-bold text-2xl text-gray-800 dark:text-white">Guías de la Comunidad</h2>
-            
-            <!-- Filter Feedback -->
-            <div v-if="searchStore.query || searchStore.gameId || searchStore.categoryId" class="flex align-items-center gap-2 bg-blue-50 dark:bg-blue-900/20 p-2 px-3 border-round-xl border-1 border-blue-100 dark:border-blue-800">
+                <div class="flex flex-column md:flex-row justify-content-between align-items-center mb-4 gap-4">
+                    <!-- Filter Feedback -->
+                    <div v-if="searchStore.query || searchStore.gameId || searchStore.categoryId" class="flex align-items-center gap-2 bg-blue-50 dark:bg-blue-900/20 p-2 px-3 border-round-xl border-1 border-blue-100 dark:border-blue-800">
                 <span class="text-sm text-blue-700 dark:text-blue-300 font-inter">
                     <i class="pi pi-filter mr-1"></i>
                     Filtrando resultados...
@@ -14,7 +19,7 @@
             </div>
         </div>
 
-        <DataTable :value="guides" paginator :rows="10" dataKey="id" class="p-datatable-sm shadow-2 border-round overflow-hidden">
+        <DataTable :value="guides" paginator :rows="10" dataKey="id" class="p-datatable-sm shadow-2 border-round overflow-hidden cursor-pointer" rowHover @row-click="(e) => viewGuide(e.data)">
             <template #empty> <div class="p-4 text-center">No se encontraron guías de otros usuarios.</div> </template>
             
             <Column field="id" header="ID" sortable style="width: 5rem"></Column>
@@ -33,9 +38,7 @@
             <Column header="Acciones" style="min-width: 14rem">
                 <template #body="slotProps">
                     <div class="flex flex-column gap-2">
-                        <div class="flex gap-2">
-                            <Button icon="pi pi-eye" outlined rounded severity="info" @click="viewGuide(slotProps.data)" />
-                            
+                        <div class="flex gap-2" @click.stop>
                             <!-- Botón Favoritos -->
                             <Button 
                                 :icon="slotProps.data.is_favorite ? 'pi pi-star-fill' : 'pi pi-star'" 
@@ -243,3 +246,9 @@ const hideDialog = () => { guideDialog.value = false; };
 
 onMounted(loadData);
 </script>
+
+<style scoped>
+.font-orbitron {
+    font-family: 'Orbitron', sans-serif !important;
+}
+</style>

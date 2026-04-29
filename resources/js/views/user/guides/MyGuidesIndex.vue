@@ -5,17 +5,20 @@
             <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
                 <!-- Avatar -->
                 <div class="relative">
-                    <Avatar 
-                        :image="authUser?.avatar_url" 
-                        :label="!authUser?.avatar_url ? authUser?.name?.[0]?.toUpperCase() : ''" 
-                        class="w-32 h-32 md:w-40 md:h-40 text-6xl shadow-2xl border-4 border-primary bg-primary text-white" 
-                        shape="circle" 
-                    />
+                    <div class="w-40 h-40 md:w-48 md:h-48 rounded-full border-4 border-[#5369F2] shadow-2xl overflow-hidden bg-[#1E293B] flex items-center justify-center flex-shrink-0">
+                        <img v-if="authUser?.avatar_url" :src="authUser.avatar_url" :alt="authUser?.name" class="w-full h-full object-cover" />
+                        <span v-else class="text-7xl font-bold text-white font-orbitron">{{ authUser?.name?.[0]?.toUpperCase() }}</span>
+                    </div>
                 </div>
 
                 <!-- Info y Bio -->
                 <div class="flex-1 text-center md:text-left">
-                    <h1 class="text-4xl font-bold m-0 mb-3 text-white tracking-tight">{{ authUser?.name }}</h1>
+                    <h1 class="text-4xl font-bold text-white font-orbitron tracking-tighter uppercase m-0 mb-2">
+                        Mi <span class="text-[#5369F2]">Sitio</span>
+                    </h1>
+                    <div class="flex items-center justify-center md:justify-start gap-2 mb-4">
+                        <span class="text-primary font-bold text-sm tracking-widest uppercase">{{ authUser?.name }}</span>
+                    </div>
                     <p class="text-xl text-gray-400 mb-6 line-height-3 max-w-2xl mx-auto md:mx-0">
                         {{ authUser?.bio || 'Sin biografía aún. ¡Cuéntanos algo sobre ti!' }}
                     </p>
@@ -44,28 +47,25 @@
                 </div>
             </div>
 
-            <!-- Botones de Acción -->
             <div class="flex flex-wrap gap-4 mt-8 pt-8 border-t border-gray-800">
-                <Button label="Personalizar" icon="pi pi-user-edit" severity="secondary" @click="openEditProfile" class="p-button-outlined border-gray-700 text-gray-400 hover:bg-gray-800" />
-                <Button label="Mis guías" icon="pi pi-list" severity="secondary" outlined @click="scrollTo('mis-guias')" class="border-gray-700 text-gray-400 hover:bg-gray-800" />
-                <Button label="Guías favoritas" icon="pi pi-heart" severity="secondary" outlined @click="scrollTo('favoritas')" class="border-gray-700 text-gray-400 hover:bg-gray-800" />
-                <Button label="Volver a Inicio" icon="pi pi-home" severity="info" text @click="router.push('/')" class="ml-auto" />
+                <Button label="Nueva Guía" icon="pi pi-plus" @click="openNew" class="!bg-[#5369F2] !border-none !text-white shadow-lg shadow-blue-500/20 !rounded-xl" />
+                <Button label="Personalizar" icon="pi pi-user-edit" outlined @click="openEditProfile" class="!border-[#5369F2] !text-white hover:!bg-[#5369F2]/10 !rounded-xl" />
+                <Button label="Cerrar Sesión" icon="pi pi-power-off" outlined @click="handleLogout" class="!border-[#5369F2] !text-white hover:!bg-[#5369F2]/10 !rounded-xl ml-auto md:ml-0" />
             </div>
         </div>
 
-        <!-- SECCIÓN: MIS GUÍAS -->
         <div id="mis-guias" class="mb-12">
             <div class="flex justify-between items-center mb-6 px-2">
-                <h2 class="text-2xl font-bold text-white flex items-center gap-3 m-0">
-                    <span class="w-2 h-8 bg-primary rounded-full"></span>
-                    Mis guías
-                </h2>
-                <Button label="Nueva Guía" icon="pi pi-plus" severity="success" rounded @click="openNew" class="shadow-lg shadow-green-500/20" />
+                <div class="flex flex-col">
+                    <h2 class="text-2xl font-bold text-white font-orbitron tracking-tighter uppercase m-0">
+                        Mis <span class="text-[#5369F2]">guías</span>
+                    </h2>
+                </div>
             </div>
 
             <div v-if="guides.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
                 <div v-for="g in guides" :key="g.id" class="flex">
-                    <div class="bg-[#111827] rounded-2xl border border-gray-800 flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 overflow-hidden">
+                    <div @click="viewGuide(g)" class="bg-[#111827] rounded-2xl border border-gray-800 flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 overflow-hidden cursor-pointer group">
                         <!-- Imagen destacada -->
                         <div class="relative h-44 overflow-hidden bg-[#0b0f19] border-b border-gray-800 flex items-center justify-center">
                             <!-- Etiqueta de Estado -->
@@ -89,8 +89,7 @@
                         </h3>
                         
                         <!-- Acciones (Debajo del título) -->
-                        <div class="flex gap-2 p-2 bg-gray-900/50 rounded-xl border border-gray-800/50">
-                            <Button icon="pi pi-eye" text rounded severity="info" @click="viewGuide(g)" class="w-10 h-10" v-tooltip="'Ver guía'" />
+                        <div class="flex gap-2 p-2 bg-gray-900/50 rounded-xl border border-gray-800/50" @click.stop>
                             <Button icon="pi pi-pencil" text rounded severity="warning" @click="editGuide(g)" class="w-10 h-10" v-tooltip="'Editar'" />
                             <Button icon="pi pi-trash" text rounded severity="danger" @click="deleteGuide(g)" class="w-10 h-10" v-tooltip="'Eliminar'" />
                         </div>
@@ -112,20 +111,31 @@
             </div>
         </div>
 
-        <!-- SECCIÓN: GUÍAS FAVORITAS -->
         <div id="favoritas" class="mb-12">
             <div class="flex justify-between items-center mb-6 px-2">
-                <h2 class="text-2xl font-bold text-white flex items-center gap-3 m-0">
-                    <span class="w-2 h-8 bg-red-500 rounded-full"></span>
-                    Guías favoritas
-                </h2>
+                <div class="flex flex-col">
+                    <h2 class="text-2xl font-bold text-white font-orbitron tracking-tighter uppercase m-0">
+                        Guías <span class="text-[#5369F2]">favoritas</span>
+                    </h2>
+                </div>
             </div>
 
             <div v-if="favoriteGuides.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
                 <div v-for="g in favoriteGuides" :key="g.id" class="flex">
-                    <div class="bg-[#111827] rounded-2xl border-l-4 border-l-yellow-500 border-gray-800 flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg relative overflow-hidden">
+                    <div @click="viewGuide(g)" class="bg-[#111827] rounded-2xl border border-gray-800 flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg relative overflow-hidden cursor-pointer group">
                         <!-- Imagen destacada -->
                         <div class="relative h-40 overflow-hidden bg-[#0b0f19] border-b border-gray-800 flex items-center justify-center">
+                            <!-- Botón Favorito (Overlay) -->
+                            <div class="absolute top-3 right-3 z-10" @click.stop>
+                                <Button 
+                                    icon="pi pi-star-fill" 
+                                    rounded 
+                                    @click="removeFavorite(g)" 
+                                    class="!w-10 !h-10 !bg-[#5369F2] !border-none !text-white shadow-lg shadow-blue-500/20" 
+                                    v-tooltip.left="'Quitar de favoritos'" 
+                                />
+                            </div>
+
                             <img v-if="g.image_url" :src="g.image_url" :alt="g.title" class="w-full h-full object-cover" />
                             <div v-else class="text-gray-600 flex flex-col items-center gap-2">
                                 <i class="pi pi-image text-2xl opacity-20"></i>
@@ -138,12 +148,6 @@
                         <h3 class="text-xl font-bold text-white m-0 line-clamp-2 min-h-[3.5rem] leading-tight">
                             {{ g.title }}
                         </h3>
-
-                        <!-- Acciones -->
-                        <div class="flex gap-2 p-2 bg-gray-900/50 rounded-xl border border-gray-800/50">
-                            <Button icon="pi pi-eye" text rounded severity="info" @click="viewGuide(g)" class="w-10 h-10" v-tooltip="'Ver guía'" />
-                            <Button icon="pi pi-star-fill" text rounded severity="warning" @click="removeFavorite(g)" class="w-10 h-10" v-tooltip="'Quitar de favoritos'" />
-                        </div>
 
                         <!-- Info -->
                         <div class="mt-auto pt-4 border-t border-gray-800/50">
@@ -245,6 +249,7 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { authStore } from "@/store/auth";
+import useAuth from "@/composables/auth";
 import Swal from 'sweetalert2';
 
 // PrimeVue
@@ -260,6 +265,11 @@ import Tag from 'primevue/tag';
 
 const router = useRouter();
 const auth = authStore();
+const { logout } = useAuth();
+
+const handleLogout = () => {
+    logout();
+};
 
 // Estados Listas
 const guides = ref([]);
@@ -486,6 +496,10 @@ onMounted(() => { if (authUser.value) loadData(); });
 </script>
 
 <style scoped>
+.font-orbitron {
+    font-family: 'Orbitron', sans-serif !important;
+}
+
 .surface-card {
     background-color: var(--surface-card);
 }

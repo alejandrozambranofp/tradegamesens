@@ -23,6 +23,7 @@
                                 type="email"
                                 v-model="loginForm.email"
                                 placeholder="tu@email.com"
+                                class="!bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none"
                                 :class="{ 'p-invalid': validationErrors?.email }"
                             />
                             <small v-if="validationErrors?.email" class="text-red-500">
@@ -41,7 +42,7 @@
                                 placeholder="••••••••"
                                 :toggleMask="true"
                                 :feedback="false"
-                                inputClass="w-full"
+                                inputClass="w-full !bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none"
                                 :class="{ 'p-invalid': validationErrors?.password }"
                                 fluid
                             />
@@ -106,6 +107,14 @@ import useAuth from '@/composables/auth';
 
 const { loginForm, validationErrors, processing, submitLogin } = useAuth();
 </script>
+
+<style scoped>
+:deep(.p-checkbox .p-checkbox-box.p-highlight),
+:deep(.p-checkbox.p-checkbox-checked .p-checkbox-box) {
+    background: #5369F2 !important;
+    border-color: #5369F2 !important;
+}
+</style>
 
 <style scoped>
 /* Asegurar que PrimeIcons se muestren correctamente */

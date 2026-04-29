@@ -16,21 +16,31 @@
                         v-for="link in navLinks" 
                         :key="link.label" 
                         @click="handleLinkClick(link)"
-                        class="text-sm font-bold text-white hover:text-[#5369F2] uppercase tracking-[0.2em] font-montserrat transition-all relative group"
+                        class="text-sm font-bold uppercase tracking-[0.2em] font-montserrat transition-all relative group"
+                        :class="isActive(link) ? 'text-[#5369F2]' : 'text-white hover:text-[#5369F2]'"
                     >
                         {{ link.label }}
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#5369F2] transition-all group-hover:w-full"></span>
+                        <span 
+                            class="absolute -bottom-1 left-0 h-0.5 bg-[#5369F2] transition-all group-hover:w-full"
+                            :class="isActive(link) ? 'w-full' : 'w-0'"
+                        ></span>
                     </button>
                 </div>
                 
-                <!-- User Icon Menu -->
-                <div class="flex items-center ml-4 relative">
+                <!-- Botones para Invitados -->
+                <div v-if="!authStore().user?.name" class="flex items-center gap-3 ml-4">
+                    <Button label="Iniciar sesión" text class="!text-white hover:!text-[#5369F2] hover:!bg-[#5369F2]/10 !rounded-xl !font-bold transition-colors" @click="router.push('/login')" />
+                    <Button label="Registrarse" class="!bg-[#5369F2] !border-none !rounded-xl !px-6 !font-bold" @click="router.push('/register')" />
+                </div>
+
+                <!-- Menú de Usuario (Solo Admin) -->
+                <div v-if="isAdmin" class="flex items-center ml-4 relative">
                     <button 
                         type="button" 
                         @click="toggleUserMenu"
                         class="w-10 h-10 rounded-full bg-[#1E293B] flex items-center justify-center text-white hover:bg-[#5369F2] transition-all shadow-lg active:scale-95"
                     >
-                        <i :class="authStore().user?.name ? 'pi pi-user' : 'pi pi-sign-in'" class="text-lg"></i>
+                        <i class="pi pi-user text-lg"></i>
                     </button>
                     <Menu ref="userMenu" :model="menuItems" popup />
                 </div>
@@ -59,7 +69,8 @@
                     v-for="link in navLinks" 
                     :key="link.label"
                     @click="handleLinkClick(link)"
-                    class="flex items-center gap-4 text-lg font-bold text-white p-3 rounded-xl hover:bg-[#1E293B] transition-colors uppercase tracking-widest font-montserrat"
+                    class="flex items-center gap-4 text-lg font-bold p-3 rounded-xl transition-colors uppercase tracking-widest font-montserrat"
+                    :class="isActive(link) ? 'text-[#5369F2] bg-[#1E293B]' : 'text-white hover:bg-[#1E293B]'"
                 >
                     {{ link.label }}
                 </button>
@@ -78,8 +89,7 @@
                             <span class="text-gray-400 text-xs">{{ authStore().user.email }}</span>
                         </div>
                     </div>
-                    <Button label="Mi Sitio" icon="pi pi-th-large" text class="!text-white !justify-start" @click="router.push('/app/my-guides')" />
-                    <Button label="Cerrar Sesión" icon="pi pi-power-off" severity="danger" text class="!justify-start" @click="handleLogout" />
+                    <Button v-if="isAdmin" label="Panel Admin" icon="pi pi-cog" text class="!text-white !justify-start" @click="router.push('/admin')" />
                 </template>
             </div>
         </Sidebar>
@@ -88,8 +98,9 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { authStore } from "../store/auth";
+import { useSearchStore } from "@/store/search";
 import useAuth from "@/composables/auth";
 
 // PrimeVue components normally imported in main.js but available here
@@ -99,6 +110,8 @@ import Avatar from 'primevue/avatar';
 import Button from 'primevue/button';
 
 const router = useRouter();
+const route = useRoute();
+const searchStore = useSearchStore();
 const userMenu = ref();
 const visibleMobileMenu = ref(false);
 const isDesktop = ref(window.innerWidth >= 992);
@@ -112,42 +125,39 @@ const navLinks = [
     { label: 'Mi Sitio', route: { name: 'app.guides.my' }, protected: true }
 ];
 
+const isActive = (link) => {
+    return route.name === link.route.name;
+};
+
+const isAdmin = computed(() => {
+    return authStore().user?.roles?.some(r => r.name.toLowerCase().includes('admin')) || false;
+});
+
 const menuItems = computed(() => {
-    if (authStore().user?.name) {
+    if (isAdmin.value) {
         return [
             {
                 items: [
                     { 
                         label: 'Panel Admin', 
                         icon: 'pi pi-cog', 
-                        command: () => router.push('/admin'),
-                        visible: authStore().user?.roles?.some(r => r.name.toLowerCase().includes('admin')) || false
-                    },
-                    { label: 'Mi Sitio', icon: 'pi pi-th-large', command: () => router.push('/app') },
-                    { separator: true },
-                    {
-                        label: 'CERRAR SESIÓN',
-                        icon: 'pi pi-power-off',
-                        class: 'text-red-500 font-bold',
-                        command: () => handleLogout()
+                        command: () => router.push('/admin')
                     }
                 ]
             }
         ];
-    } else {
-        return [
-            {
-                items: [
-                    { label: 'Iniciar Sesión', icon: 'pi pi-sign-in', command: () => router.push('/login') },
-                    { label: 'Registrarse', icon: 'pi pi-user-plus', command: () => router.push('/register') }
-                ]
-            }
-        ];
     }
+    return [];
 });
 
 const handleLinkClick = (link) => {
     visibleMobileMenu.value = false;
+
+    // Limpiar filtros si se va a la página de juegos
+    if (link.label === 'Juegos') {
+        searchStore.clearFilters();
+    }
+
     
     // Guest redirection logic
     if (link.protected && !authStore().user?.name) {

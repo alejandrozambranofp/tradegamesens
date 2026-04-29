@@ -9,7 +9,6 @@
                 <p class="text-gray-400 font-inter text-lg max-w-2xl mx-auto">
                     Novedades, actualizaciones y lo mejor de la comunidad TradeGameSense.
                 </p>
-                <div class="w-24 h-1 bg-[#5369F2] mx-auto rounded-full"></div>
             </header>
 
             <!-- Blog Post -->

@@ -1,110 +1,95 @@
 <template>
     <div class="p-4 min-h-screen" style="background-color: #0b0f19;">
-        <div class="flex items-center justify-between mb-8 px-2">
-            <div class="flex items-center gap-4">
-                <Button icon="pi pi-arrow-left" text rounded severity="secondary" @click="router.back()" class="text-gray-400 hover:bg-gray-800" />
-                <h1 class="text-3xl font-bold text-white m-0 tracking-tight">Publicar Nueva Guía</h1>
-            </div>
-            <div class="hidden md:flex items-center gap-2 text-gray-500">
-                <i class="pi pi-info-circle"></i>
-                <span>Tu guía será visible para toda la comunidad</span>
+        <div class="mb-12 px-2">
+            <div class="flex flex-col">
+                <h1 class="text-4xl font-bold text-white font-orbitron tracking-tighter uppercase">
+                    Publicar <span class="text-[#5369F2]">Guía</span>
+                </h1>
+                <p class="text-gray-400 font-medium mt-2">Contribuye con tu guia en la comunidad de tradegamesense!</p>
             </div>
         </div>
 
-        <div class="grid grid-cols-12 gap-8">
-            <div class="col-span-12 lg:col-span-8">
-                <div class="p-8 rounded-2xl border border-gray-800 shadow-xl" style="background-color: #111827;">
-                    <div class="p-fluid flex flex-col gap-6">
-                        
-                        <!-- Imagen de Portada -->
-                        <div class="field">
-                            <label class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Imagen de Portada (Obligatoria)</label>
-                            <div class="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-gray-700 rounded-2xl bg-[#0b0f19] hover:border-primary/50 transition-colors cursor-pointer"
-                                @click="coverInput.click()">
-                                <input type="file" ref="coverInput" class="hidden" accept="image/*" @change="onImageSelect" />
-                                
-                                <div v-if="!coverPreview && !guide.image" class="text-center p-8">
-                                    <i class="pi pi-cloud-upload text-5xl text-[#5369F2] mb-4"></i>
-                                    <p class="text-gray-300 font-bold m-0 text-lg">Haz clic para subir la imagen de portada</p>
-                                    <p class="text-gray-500 text-sm mt-2">Formatos recomendados: JPG, PNG, WEBP</p>
-                                </div>
-                                
-                                <img v-else :src="coverPreview || guide.image" class="w-full max-h-[300px] object-cover rounded-xl shadow-lg" />
-                                
-                                <Button v-if="coverPreview || guide.image" label="Cambiar Imagen" icon="pi pi-refresh" severity="secondary" size="small" text />
-                            </div>
-                        </div>
-                        
-                        <div class="field">
-                            <label for="title" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Título de la Guía</label>
-                            <InputText id="title" v-model="guide.title" 
-                                placeholder="Escribe el título de tu guía..." 
-                                class="bg-[#0b0f19] border-gray-700 text-white p-3 rounded-xl focus:border-primary" />
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="field">
-                                <label for="game" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Juego Relacionado</label>
-                                <Dropdown id="game" v-model="guide.game_id" :options="games" optionLabel="title" optionValue="id" 
-                                    placeholder="Selecciona un juego" :filter="true"
-                                    class="bg-[#0b0f19] border-gray-700 text-white rounded-xl" />
-                            </div>
-
-                            <div class="field">
-                                <label for="cats" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Categorías</label>
-                                <MultiSelect id="cats" v-model="selectedCategories" :options="categories" optionLabel="name" optionValue="id" 
-                                    placeholder="Elige temas" display="chip"
-                                    class="bg-[#0b0f19] border-gray-700 text-white rounded-xl w-full" />
-                            </div>
-
-                            <div class="field">
-                                <label for="difficulty" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Dificultad (Obligatoria)</label>
-                                <Dropdown id="difficulty" v-model="guide.difficulty" :options="['D', 'C', 'B', 'A', 'S']" 
-                                    placeholder="Selecciona un nivel"
-                                    class="bg-[#0b0f19] border-gray-700 text-white rounded-xl w-full" />
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <label class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Contenido de la Guía</label>
-                            <div class="editor-dark-wrapper border border-gray-700 rounded-xl overflow-hidden">
-                                <Editor v-model="guide.content" editorStyle="height: 450px" @load="onEditorLoad" placeholder="Escribe aquí tu nueva guia..." />
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col md:flex-row gap-4 mt-4 pt-6 border-t border-gray-800">
-                            <Button label="Publicar Guía Ahora" icon="pi pi-send" @click="saveGuide" :loading="isSaving" 
-                                class="w-full p-4 text-lg font-bold shadow-lg shadow-[#5369F2]/30 !bg-[#5369F2] !border-[#5369F2] hover:!bg-blue-600 transition-all rounded-xl" />
-                        </div>
-                    </div>
+        <!-- Sección de Consejos (Horizontal en la parte superior) -->
+        <div class="mb-8 p-6 rounded-2xl border border-gray-800" style="background-color: #111827;">
+            <div class="flex flex-col md:flex-row gap-6 md:gap-12 items-center justify-center">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-check-circle text-[#5369F2] text-xl"></i>
+                    <span class="text-gray-300 text-sm leading-relaxed">Usa <strong>negritas</strong> para resaltar puntos clave del combate o rutas.</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-check-circle text-[#5369F2] text-xl"></i>
+                    <span class="text-gray-300 text-sm leading-relaxed">Añade listas paso a paso para que sea fácil de leer en móviles.</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-check-circle text-[#5369F2] text-xl"></i>
+                    <span class="text-gray-300 text-sm leading-relaxed">Verifica la ortografía antes de publicar tu guía.</span>
                 </div>
             </div>
+        </div>
 
-            <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
-                <div class="p-6 rounded-2xl border border-gray-800" style="background-color: #111827;">
-                    <h3 class="text-white font-bold m-0 mb-4 flex items-center gap-2">
-                        <i class="pi pi-lightbulb text-yellow-500"></i>
-                        Consejos de Redacción
-                    </h3>
-                    <ul class="p-0 m-0 list-none flex flex-col gap-4">
-                        <li class="flex gap-3">
-                            <i class="pi pi-check-circle text-[#5369F2] mt-1 text-lg"></i>
-                            <span class="text-gray-300 text-sm leading-relaxed">Usa <strong>negritas</strong> para resaltar puntos clave del combate o rutas.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="pi pi-check-circle text-[#5369F2] mt-1 text-lg"></i>
-                            <span class="text-gray-300 text-sm leading-relaxed">Añade listas paso a paso para que sea fácil de leer en móviles.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="pi pi-check-circle text-[#5369F2] mt-1 text-lg"></i>
-                            <span class="text-gray-300 text-sm leading-relaxed">Verifica la ortografía antes de publicar tu guía.</span>
-                        </li>
-                    </ul>
+        <!-- Formulario Principal (Ancho Completo) -->
+        <div class="p-8 rounded-2xl border border-gray-800 shadow-xl mb-12" style="background-color: #111827;">
+            <div class="p-fluid flex flex-col gap-6">
+                
+                <!-- Imagen de Portada -->
+                <div class="field">
+                    <label class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Imagen de Portada (Obligatoria)</label>
+                    <div class="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-gray-700 rounded-2xl bg-[#0b0f19] hover:border-primary/50 transition-colors cursor-pointer"
+                        @click="coverInput.click()">
+                        <input type="file" ref="coverInput" class="hidden" accept="image/*" @change="onImageSelect" />
+                        
+                        <div v-if="!coverPreview && !guide.image" class="text-center p-8">
+                            <i class="pi pi-cloud-upload text-5xl text-[#5369F2] mb-4"></i>
+                            <p class="text-gray-300 font-bold m-0 text-lg">Haz clic para subir la imagen de portada</p>
+                            <p class="text-gray-500 text-sm mt-2">Formatos recomendados: JPG, PNG, WEBP</p>
+                        </div>
+                        
+                        <img v-else :src="coverPreview || guide.image" class="w-full max-h-[400px] object-cover rounded-xl shadow-lg" />
+                        
+                        <Button v-if="coverPreview || guide.image" label="Cambiar Imagen" icon="pi pi-refresh" severity="secondary" size="small" text />
+                    </div>
+                </div>
+                
+                <div class="field">
+                    <label for="title" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Título de la Guía</label>
+                    <InputText id="title" v-model="guide.title" 
+                        placeholder="Escribe el título de tu guía..." 
+                        class="!bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none" />
                 </div>
 
-                <div class="p-6 rounded-2xl border border-dashed border-gray-700 opacity-60">
-                    <h4 class="text-gray-400 m-0 mb-2">Vista Previa</h4>
-                    <p class="text-gray-600 text-xs">Próximamente podrás ver cómo queda tu guía antes de publicarla.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="field">
+                        <label for="game" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Juego Relacionado</label>
+                        <Dropdown id="game" v-model="guide.game_id" :options="games" optionLabel="title" optionValue="id" 
+                            placeholder="Selecciona un juego" :filter="true" appendTo="self"
+                            class="!bg-[#0b0f19] !border-white/10 !text-white !rounded-xl" />
+                    </div>
+
+                    <div class="field">
+                        <label for="cats" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Categorías</label>
+                        <MultiSelect id="cats" v-model="selectedCategories" :options="categories" optionLabel="name" optionValue="id" 
+                            placeholder="Elige temas" display="chip" appendTo="self"
+                            class="!bg-[#0b0f19] !border-white/10 !text-white !rounded-xl w-full" />
+                    </div>
+
+                    <div class="field">
+                        <label for="difficulty" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Dificultad (Obligatoria)</label>
+                        <Dropdown id="difficulty" v-model="guide.difficulty" :options="['D', 'C', 'B', 'A', 'S']" 
+                            placeholder="Selecciona un nivel" appendTo="self"
+                            class="!bg-[#0b0f19] !border-white/10 !text-white !rounded-xl w-full" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Contenido de la Guía</label>
+                    <div class="editor-dark-wrapper border border-gray-700 rounded-xl overflow-hidden">
+                        <Editor v-model="guide.content" editorStyle="height: 500px" @load="onEditorLoad" placeholder="Escribe aquí tu nueva guia..." />
+                    </div>
+                </div>
+
+                <div class="flex justify-center mt-4 pt-6 border-t border-gray-800">
+                    <Button label="Publicar Guía Ahora" icon="pi pi-send" @click="saveGuide" :loading="isSaving" 
+                        class="!bg-[#5369F2] !border-none !rounded-xl !px-12 !py-4 !text-lg !font-bold shadow-lg shadow-[#5369F2]/30 transition-all" />
                 </div>
             </div>
         </div>
@@ -333,6 +318,28 @@ onMounted(async () => {
     }
 });
 </script>
+<style scoped>
+/* Cambiar checks verdes a azul del logo */
+:deep(.p-checkbox .p-checkbox-box.p-highlight),
+:deep(.p-checkbox.p-checkbox-checked .p-checkbox-box) {
+    background: #5369F2 !important;
+    border-color: #5369F2 !important;
+}
+
+:deep(.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight) {
+    background: rgba(83, 105, 242, 0.1) !important;
+    color: #5369F2 !important;
+}
+
+:deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight) {
+    background: rgba(83, 105, 242, 0.1) !important;
+    color: #5369F2 !important;
+}
+
+.font-orbitron {
+    font-family: 'Orbitron', sans-serif !important;
+}
+</style>
 
 <style>
 /* Ajustes para el Editor en modo oscuro */
@@ -360,5 +367,9 @@ onMounted(async () => {
 .p-multiselect-token {
     background-color: var(--primary-color) !important;
     color: white !important;
+}
+
+.font-orbitron {
+    font-family: 'Orbitron', sans-serif !important;
 }
 </style>
