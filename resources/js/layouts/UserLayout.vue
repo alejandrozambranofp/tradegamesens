@@ -5,7 +5,7 @@
 
         <!-- Espaciado para el Navbar fijo -->
         <div class="pt-24 pb-12 flex-grow">
-            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-6">
                 <!-- Aquí se cargan las vistas (Mis Guías, Comunidad, etc.) -->
                 <router-view />
             </div>

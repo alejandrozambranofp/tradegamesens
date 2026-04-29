@@ -5,19 +5,21 @@
             <img v-if="game?.cover" :src="game.cover" class="w-full h-full object-cover opacity-30 blur-sm" />
             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f19] to-transparent"></div>
             
-            <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                <div class="absolute top-6 left-6 md:top-10 md:left-10">
-                    <Button label="Volver" icon="pi pi-chevron-left" @click="router.back()" 
-                        class="!bg-white/5 hover:!bg-white/10 !border-white/10 !backdrop-blur-md !text-white !rounded-xl !px-4 !py-2" />
-                </div>
-                
-                <h1 class="text-4xl md:text-6xl font-black font-orbitron tracking-tighter uppercase mb-4">
-                    {{ game?.title || 'Cargando...' }}
-                </h1>
-                <div class="flex items-center gap-4 text-primary font-bold tracking-widest uppercase text-sm">
-                    <span class="w-12 h-[1px] bg-primary"></span>
-                    <span>{{ guides.length }} Guías Disponibles</span>
-                    <span class="w-12 h-[1px] bg-primary"></span>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <div class="max-w-7xl mx-auto px-6 w-full relative h-full flex flex-col items-center justify-center">
+                    <div class="absolute top-6 left-6 md:top-10 md:left-0">
+                        <Button label="Volver" icon="pi pi-chevron-left" @click="router.back()" 
+                            class="!bg-white/5 hover:!bg-white/10 !border-white/10 !backdrop-blur-md !text-white !rounded-xl !px-4 !py-2" />
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-6xl font-black font-orbitron tracking-tighter uppercase mb-4">
+                        {{ game?.title || 'Cargando...' }}
+                    </h1>
+                    <div class="flex items-center gap-4 text-primary font-bold tracking-widest uppercase text-sm">
+                        <span class="w-12 h-[1px] bg-primary"></span>
+                        <span>{{ guides.length }} Guías Disponibles</span>
+                        <span class="w-12 h-[1px] bg-primary"></span>
+                    </div>
                 </div>
             </div>
         </div>

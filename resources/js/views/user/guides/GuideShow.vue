@@ -1,6 +1,6 @@
 <template>
-    <div class="min-h-screen p-4 pt-28 pb-12" style="background-color: #0b0f19;">
-        <div class="max-w-5xl mx-auto">
+    <div class="min-h-screen pt-28 pb-12 bg-[#0b0f19]">
+        <div class="max-w-7xl mx-auto px-6">
             
             <!-- Cabecera de Botones Simétricos -->
             <div class="flex justify-between items-center mb-6 pt-4">

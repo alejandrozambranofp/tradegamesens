@@ -1,5 +1,6 @@
-<template>
-    <div class="card p-4">
+    <div class="min-h-screen pt-28 md:pt-32 bg-[#0b0f19]">
+        <div class="max-w-7xl mx-auto px-6 pb-20">
+            <div class="card p-6 bg-[#111827] border border-white/5 rounded-3xl">
         <div class="flex flex-column md:flex-row justify-content-between align-items-center mb-4 gap-4">
             <h2 class="m-0 font-bold text-2xl text-gray-800 dark:text-white">Guías de la Comunidad</h2>
             
@@ -84,6 +85,8 @@
                 <Button label="Guardar Cambios" icon="pi pi-check" @click="saveGuide" />
             </template>
         </Dialog>
+            </div>
+        </div>
     </div>
 </template>
 

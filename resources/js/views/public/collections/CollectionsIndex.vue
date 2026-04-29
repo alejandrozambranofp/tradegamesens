@@ -1,6 +1,6 @@
 <template>
-    <div class="min-h-screen p-6 md:p-12 pt-28 md:pt-32 bg-[#0b0f19]">
-        <div class="max-w-[1600px] mx-auto">
+    <div class="min-h-screen pt-28 md:pt-32 bg-[#0b0f19]">
+        <div class="max-w-7xl mx-auto px-6 pb-20">
             <!-- Cabecera de la Página -->
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
                 <div class="flex-shrink-0">

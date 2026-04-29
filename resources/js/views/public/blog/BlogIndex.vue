@@ -1,6 +1,6 @@
 <template>
-    <div class="min-h-screen bg-[#0F172A] pt-32 pb-20 px-6">
-        <div class="max-w-3xl mx-auto">
+    <div class="min-h-screen bg-[#0F172A] pt-32 pb-20">
+        <div class="max-w-7xl mx-auto px-6">
             <!-- Header -->
             <header class="text-center mb-16 space-y-4">
                 <h1 class="text-4xl md:text-6xl font-black text-white font-orbitron tracking-tighter uppercase">
