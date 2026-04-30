@@ -3,8 +3,8 @@
         <div class="max-w-md w-full">
             <!-- Logo y título -->
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold">
-                    Bienvenido a TradeGameSense
+                <h2 class="text-3xl font-bold font-orbitron tracking-tighter">
+                    Bienvenido a Trade<span class="text-[#5369F2]">Game</span>Sense
                 </h2>
                 <p class="mt-2 text-sm text-gray-400">
                     Inicia sesión para continuar
@@ -145,5 +145,10 @@ const { loginForm, validationErrors, processing, submitLogin } = useAuth();
 /* Estilos para Button de PrimeVue */
 :deep(.p-button) {
     width: 100%;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+.font-orbitron {
+    font-family: 'Orbitron', sans-serif !important;
 }
 </style>

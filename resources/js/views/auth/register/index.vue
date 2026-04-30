@@ -3,8 +3,8 @@
         <div class="max-w-2xl w-full">
             <!-- Logo y título -->
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold">
-                    Únete a nosotros!
+                <h2 class="text-3xl font-bold font-orbitron tracking-tighter">
+                    Únete a <span class="text-[#5369F2]">nosotros</span>!
                 </h2>
                 <p class="mt-2 text-sm text-gray-400">
                     Regístrate para comenzar
@@ -148,3 +148,10 @@ import useAuth from '@/composables/auth';
 
 const { registerForm, validationErrors, processing, submitRegister } = useAuth();
 </script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+.font-orbitron {
+    font-family: 'Orbitron', sans-serif !important;
+}
+</style>
