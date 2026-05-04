@@ -6,7 +6,7 @@
             <!-- Background with Overlay -->
             <div class="absolute inset-0 z-0">
                 <img src="/images/home/home-hero.png" alt="Hero background" class="w-full h-full object-cover"/>
-                <div class="absolute inset-0 bg-gradient-to-b from-black/75 via-black/30 to-[#0F172A] h-full"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-black/90 via-black/50 to-[#0F172A] h-full"></div>
             </div>
 
             <!-- Content -->

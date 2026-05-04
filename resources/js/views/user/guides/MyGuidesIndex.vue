@@ -1,7 +1,7 @@
 <template>
-    <div class="p-4 min-h-screen" style="background-color: #0b0f19;">
+    <div class="p-4 min-h-screen" style="background-color: #111827;">
         <!-- HEADER DE PERFIL -->
-        <div class="p-6 rounded-2xl shadow-xl mb-8 border border-gray-800" style="background-color: #111827;">
+        <div class="p-6 rounded-2xl shadow-xl mb-8" style="background-color: #111827;">
             <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
                 <!-- Avatar -->
                 <div class="relative">
@@ -50,7 +50,7 @@
             <div class="flex flex-wrap gap-4 mt-8 pt-8 border-t border-gray-800">
                 <Button label="Nueva Guía" icon="pi pi-plus" @click="openNew" class="!bg-[#5369F2] !border-none !text-white shadow-lg shadow-blue-500/20 !rounded-xl" />
                 <Button label="Personalizar" icon="pi pi-user-edit" outlined @click="openEditProfile" class="!border-[#5369F2] !text-white hover:!bg-[#5369F2]/10 !rounded-xl" />
-                <Button label="Cerrar Sesión" icon="pi pi-power-off" outlined @click="handleLogout" class="!border-[#5369F2] !text-white hover:!bg-[#5369F2]/10 !rounded-xl ml-auto md:ml-0" />
+                <Button label="Cerrar Sesión" icon="pi pi-power-off" outlined @click="handleLogout" class="!border-red-500 !text-white hover:!bg-red-500/10 hover:!text-red-500 !rounded-xl ml-auto md:ml-0" />
             </div>
         </div>
 
@@ -65,12 +65,12 @@
 
             <div v-if="guides.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
                 <div v-for="g in guides" :key="g.id" class="flex">
-                    <div @click="viewGuide(g)" class="bg-[#111827] rounded-2xl border border-gray-800 flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 overflow-hidden cursor-pointer group">
+                    <div @click="viewGuide(g)" class="bg-[#111827] rounded-2xl flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 overflow-hidden cursor-pointer group">
                         <!-- Imagen destacada -->
                         <div class="relative h-44 overflow-hidden bg-[#0b0f19] border-b border-gray-800 flex items-center justify-center">
                             <!-- Etiqueta de Estado -->
                             <div class="absolute top-3 right-3 z-10 shadow-md rounded-md">
-                                <Tag v-if="g.status === 'published'" severity="success" value="Aprobada" />
+                                <Tag v-if="g.status === 'published'" value="Aprobada" class="!bg-[#5369F2]/20 !text-[#5369F2] border-none font-bold" />
                                 <Tag v-else-if="g.status === 'pending'" value="Pendiente" class="!bg-yellow-500 !text-yellow-950 border-none font-bold" />
                                 <Tag v-else-if="g.status === 'rejected'" severity="danger" value="Rechazada" />
                             </div>
@@ -122,7 +122,7 @@
 
             <div v-if="favoriteGuides.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
                 <div v-for="g in favoriteGuides" :key="g.id" class="flex">
-                    <div @click="viewGuide(g)" class="bg-[#111827] rounded-2xl border border-gray-800 flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg relative overflow-hidden cursor-pointer group">
+                    <div @click="viewGuide(g)" class="bg-[#111827] rounded-2xl flex flex-col w-full hover:border-primary/50 transition-all duration-300 shadow-lg relative overflow-hidden cursor-pointer group">
                         <!-- Imagen destacada -->
                         <div class="relative h-40 overflow-hidden bg-[#0b0f19] border-b border-gray-800 flex items-center justify-center">
                             <!-- Botón Favorito (Overlay) -->
@@ -170,56 +170,74 @@
         <!-- DIÁLOGOS -->
         
         <!-- Dialog: Editar Perfil (Personalizar) -->
-        <Dialog v-model:visible="profileDialog" header="Personalizar Perfil" modal class="admin-v2-dialog" :style="{width: '500px'}">
-            <div class="flex flex-column align-items-center gap-4 mb-6">
+        <Dialog v-model:visible="profileDialog" modal class="admin-v2-dialog" :style="{width: '500px'}">
+            <template #header>
+                <h3 class="text-xl font-bold font-orbitron tracking-tighter uppercase m-0 text-white">
+                    MI <span class="text-[#5369F2]">Perfil</span>
+                </h3>
+            </template>
+            <div class="flex flex-col items-center gap-4 mb-6 pt-4">
                 <div class="relative group">
                     <Avatar 
                         :image="avatarPreview || authUser?.avatar_url" 
                         size="xlarge" shape="circle" 
-                        class="w-8rem h-8rem shadow-2 border-4 border-primary/20 bg-[#0b0f19]" 
+                        class="!w-32 !h-32 shadow-2 border-none bg-[#0b0f19]" 
                     />
                 </div>
-                <Button label="Cambiar Foto" icon="pi pi-images" size="small" outlined @click="showAvatarGrid = true" class="w-full" />
-                <p class="text-[10px] text-gray-500 text-center uppercase tracking-widest font-bold">Elige un avatar oficial</p>
+                <Button label="Cambiar Foto" icon="pi pi-images" size="small" text @click="showAvatarGrid = true" class="!text-[#5369F2] font-bold no-hover-bg" />
+                <p class="text-gray-500 text-center uppercase text-[10px] tracking-widest font-bold -mt-2">Elige un avatar oficial</p>
             </div>
 
-            <div class="field mb-3">
-                <label for="prof_name" class="font-bold">Nombre de usuario</label>
-                <InputText id="prof_name" v-model="profileName" placeholder="Tu nombre..." />
+            <div class="field mb-6">
+                <label for="prof_name" class="text-[#5369F2] font-medium mb-2 block uppercase text-xs tracking-wider">Nombre de usuario</label>
+                <InputText id="prof_name" v-model="profileName" placeholder="Tu nombre..." 
+                    class="!bg-[#111827] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none w-full" />
             </div>
 
-            <div class="field mb-3">
-                <label for="prof_bio" class="font-bold">Biografía</label>
-                <Textarea id="prof_bio" v-model="profileBio" rows="4" placeholder="Cuéntanos sobre ti..." class="w-full" />
+            <div class="field mb-6">
+                <label for="prof_bio" class="text-[#5369F2] font-medium mb-2 block uppercase text-xs tracking-wider">Biografía</label>
+                <Textarea id="prof_bio" v-model="profileBio" rows="4" placeholder="Cuéntanos sobre ti..." 
+                    class="!bg-[#111827] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none w-full" />
             </div>
 
             <template #footer>
-                <Button label="Cancelar" icon="pi pi-times" text @click="profileDialog = false" />
-                <Button label="Guardar Perfil" icon="pi pi-check" :loading="isSavingProfile" @click="saveProfile" />
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-800">
+                    <Button label="Cancelar" icon="pi pi-times" text @click="profileDialog = false" class="!text-gray-400 hover:!text-red-500 hover:!bg-red-500/10" />
+                    <Button label="Guardar Perfil" icon="pi pi-check" :loading="isSavingProfile" @click="saveProfile" 
+                        class="!bg-[#5369F2] !border-none !rounded-xl !px-6 !py-3 !font-bold shadow-lg shadow-[#5369F2]/20" />
+                </div>
             </template>
         </Dialog>
 
         <!-- Dialog: Selector de Avatares Oficiales -->
-        <Dialog v-model:visible="showAvatarGrid" header="Avatares Oficiales" modal class="admin-v2-dialog" :style="{width: '600px'}">
+        <Dialog v-model:visible="showAvatarGrid" modal class="admin-v2-dialog" :style="{width: '600px'}">
+            <template #header>
+                <h3 class="text-xl font-bold font-orbitron tracking-tighter uppercase m-0 text-white">
+                    MIS <span class="text-[#5369F2]">Avatares</span>
+                </h3>
+            </template>
             <div class="grid grid-cols-3 md:grid-cols-4 gap-4 p-4">
                 <div v-for="a in predefinedAvatars" :key="a.name" 
                     class="cursor-pointer group relative aspect-square rounded-2xl overflow-hidden border-2 transition-all"
-                    :class="tempAvatarName === a.name ? 'border-primary' : 'border-gray-800 hover:border-gray-600'"
+                    :class="tempAvatarName === a.name ? 'border-[#5369F2]' : 'border-gray-800 hover:border-gray-600'"
                     @click="tempAvatarName = a.name">
                     <img :src="a.url" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    <div v-if="tempAvatarName === a.name" class="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                    <div v-if="tempAvatarName === a.name" class="absolute inset-0 bg-[#5369F2]/20 flex items-center justify-center">
                         <i class="pi pi-check text-white text-2xl"></i>
                     </div>
                 </div>
             </div>
             <template #footer>
-                <Button label="Cancelar" icon="pi pi-times" text severity="secondary" @click="showAvatarGrid = false" />
-                <Button label="Confirmar" icon="pi pi-check" @click="confirmPredefinedAvatar" :disabled="!tempAvatarName" />
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-800">
+                    <Button label="Cancelar" icon="pi pi-times" text @click="showAvatarGrid = false" class="!text-gray-400 hover:!text-red-500 hover:!bg-red-500/10" />
+                    <Button label="Confirmar Avatar" icon="pi pi-check" @click="confirmPredefinedAvatar" :disabled="!tempAvatarName" 
+                        class="!bg-[#5369F2] !border-none !rounded-xl !px-6 !py-3 !font-bold shadow-lg shadow-[#5369F2]/20" />
+                </div>
             </template>
         </Dialog>
 
         <!-- Dialog: Nueva/Editar Guía -->
-        <Dialog v-model:visible="guideDialog" :header="guide.id ? 'Editar Guía' : 'Nueva Guía'" modal class="p-fluid" :style="{width: '800px'}">
+        <Dialog v-model:visible="guideDialog" :header="guide.id ? 'Editar Guía' : 'Nueva Guía'" modal class="admin-v2-dialog p-fluid" :style="{width: '800px'}">
             <div class="field mb-4">
                 <label for="game" class="font-bold block mb-2">Juego</label>
                 <Dropdown id="game" v-model="guide.game_id" :options="allGames" optionLabel="title" optionValue="id" placeholder="Selecciona un juego" :filter="true" class="w-full" />
@@ -425,7 +443,7 @@ const saveProfile = async () => {
         
         Swal.fire({
             title: '¡Perfil Actualizado!',
-            icon: 'success',
+            icon: 'info',
             timer: 1500,
             showConfirmButton: false,
             background: '#111827',
@@ -502,5 +520,45 @@ onMounted(() => { if (authUser.value) loadData(); });
 
 .surface-card {
     background-color: var(--surface-card);
+}
+</style>
+
+<style>
+/* Estilos globales para el diálogo (necesario si se teleporta al body) */
+.admin-v2-dialog {
+    border: none !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.admin-v2-dialog .p-dialog-header {
+    background-color: #111827 !important;
+    border: none !important;
+    color: white !important;
+    padding: 1.5rem 1.5rem 1rem 1.5rem !important;
+}
+
+.admin-v2-dialog .p-dialog-content {
+    background-color: #111827 !important;
+    color: white !important;
+    padding: 0 1.5rem 1.5rem 1.5rem !important;
+}
+
+.admin-v2-dialog .p-dialog-footer {
+    background-color: #111827 !important;
+    border: none !important;
+    padding: 1rem 1.5rem 1.5rem 1.5rem !important;
+}
+
+.admin-v2-dialog .p-dialog-header-close {
+    color: #9ca3af !important;
+}
+
+.admin-v2-dialog .p-dialog-header-close:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: white !important;
+}
+
+.no-hover-bg:hover {
+    background-color: transparent !important;
 }
 </style>

@@ -1,6 +1,7 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 bg-[#0b0f19] text-white">
-        <div class="max-w-md w-full">
+    <div class="min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 text-white bg-cover bg-center bg-no-repeat relative" style="background-image: url('/images/home/imagen_registrologin.png');">
+        <div class="absolute inset-0 bg-[#0b0f19]/70 backdrop-blur-[2px]"></div>
+        <div class="max-w-md w-full relative z-10">
             <!-- Logo y título -->
             <div class="text-center mb-8">
                 <h2 class="text-3xl font-bold font-orbitron tracking-tighter">

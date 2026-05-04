@@ -7,17 +7,16 @@
                 <!-- Botón Volver (Izquierda) -->
                 <Button label="Volver" icon="pi pi-chevron-left" @click="$router.back()" 
                     rounded outlined
-                    class="border-gray-800 transition-all duration-300 font-bold !text-gray-400 hover:!bg-gray-800/30" />
+                    class="!border-[#5369F2] transition-all duration-300 font-bold !text-[#5369F2] hover:!bg-[#5369F2]/10" />
                 
                 <!-- Botón Favoritos (Derecha) -->
                 <div v-if="guide">
                     <Button 
                         :label="isFavorite ? 'En favoritos' : 'Guardar en favoritos'"
                         :icon="isFavorite ? 'pi pi-star-fill' : 'pi pi-star'" 
-                        :severity="isFavorite ? 'warning' : 'secondary'" 
                         rounded outlined 
-                        class="border-gray-800 transition-all duration-300 font-bold"
-                        :class="{ 'text-yellow-500 border-yellow-500/50 bg-yellow-500/5': isFavorite, 'text-gray-400': !isFavorite }"
+                        class="transition-all duration-300 font-bold"
+                        :class="{ '!text-[#5369F2] !border-[#5369F2]/50 !bg-[#5369F2]/5': isFavorite, '!text-gray-400 !border-gray-800 hover:!text-[#5369F2] hover:!border-[#5369F2] hover:!bg-[#5369F2]/10': !isFavorite }"
                         @click="handleFavoriteToggle"
                         :loading="loadingFavorite"
                     />
@@ -27,9 +26,9 @@
             <div v-if="guide">
             <header class="p-8 md:p-12 rounded-t-3xl border-x border-t border-gray-800 shadow-2xl" style="background-color: #111827;">
                 <div class="flex flex-wrap gap-3 mb-6">
-                    <Tag v-if="guide.game" :value="guide.game.title" class="bg-primary/20 text-primary border border-primary/30 px-3 py-1" />
+                    <Tag v-if="guide.game" :value="guide.game.title" class="!bg-[#5369F2]/20 !text-[#5369F2] !border-[#5369F2]/30 px-3 py-1 font-bold" />
                     <Tag v-if="guide.difficulty" :value="'Dificultad ' + guide.difficulty" :class="getDifficultyClass(guide.difficulty)" class="px-3 py-1 border" />
-                    <Tag v-for="cat in guide.categories" :key="cat.id" :value="cat.name" class="bg-gray-800 text-gray-300 border border-gray-700 px-3 py-1" />
+                    <Tag v-for="cat in guide.categories" :key="cat.id" :value="cat.name" class="!bg-[#5369F2]/20 !text-[#5369F2] !border-[#5369F2]/30 px-3 py-1 font-bold" />
                 </div>
 
                 <h1 class="text-4xl md:text-6xl font-black text-white mb-8 leading-tight tracking-tighter break-words">
@@ -39,7 +38,7 @@
                 <div class="flex items-center gap-4 pt-8 border-t border-gray-800/50">
                     <Avatar 
                         :image="guide.user?.avatar_url" 
-                        shape="circle" size="large" class="border-2 border-primary shadow-lg" 
+                        shape="circle" size="large" class="border-2 border-[#5369F2] shadow-lg" 
                     />
                     <div>
                         <div class="text-white font-bold text-lg">{{ guide.user?.name || 'Autor' }}</div>
@@ -62,13 +61,10 @@
             <section class="mt-12 space-y-8">
                 <div class="flex items-center justify-between px-2">
                     <h2 class="text-3xl font-bold text-white m-0 flex items-center gap-3">
-                        <i class="pi pi-comments text-primary"></i>
+                        <i class="pi pi-comments text-[#5369F2]"></i>
                         Comunidad
                     </h2>
-                    <div class="bg-gray-800/50 px-4 py-2 rounded-full border border-gray-700">
-                        <span class="text-yellow-500 font-bold text-xl">{{ guide.rating || 0 }}</span>
-                        <span class="text-gray-500 ml-1">/ 5 ({{ guide.ratings_count || 0 }} votos)</span>
-                    </div>
+
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -78,13 +74,13 @@
                             <div v-for="r in guide.ratings" :key="r.id" class="p-6 rounded-2xl bg-[#111827] border border-gray-800 transition-all hover:border-gray-700">
                                 <div class="flex justify-between items-start mb-4">
                                     <div class="flex items-center gap-3">
-                                        <Avatar :image="r.user?.avatar_url" shape="circle" size="large" class="border border-primary/30" />
+                                        <Avatar :image="r.user?.avatar_url" shape="circle" size="large" class="border border-[#5369F2]/30" />
                                         <div>
                                             <div class="text-white font-bold">{{ r.user?.name || 'Usuario' }}</div>
                                             <div class="text-gray-500 text-xs">{{ r.created_at }}</div>
                                         </div>
                                     </div>
-                                    <Rating v-model="r.score" readonly :cancel="false" />
+                                    <Rating v-model="r.score" readonly :cancel="false" :pt="{ onIcon: { class: '!text-[#5369F2] !fill-[#5369F2]' }, offIcon: { class: '!text-gray-500' } }" />
                                 </div>
                                 <p class="text-gray-300 leading-relaxed m-0 italic">"{{ r.comment || 'Sin comentario' }}"</p>
                             </div>
@@ -97,7 +93,7 @@
 
                     <!-- Formulario de Valoración -->
                     <div class="lg:col-span-5">
-                        <div class="p-8 rounded-3xl bg-[#111827] border border-primary/20 sticky top-24 shadow-2xl">
+                        <div class="p-8 rounded-3xl bg-[#111827] border border-[#5369F2]/20 sticky top-24 shadow-2xl">
                             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                                 <i class="pi pi-star-fill text-yellow-500"></i>
                                 Deja tu valoración
@@ -106,12 +102,16 @@
                             <div v-if="auth.user?.name" class="space-y-6">
                                 <div class="flex flex-col items-center gap-3 p-4 bg-gray-900/50 rounded-2xl border border-gray-800">
                                     <span class="text-gray-400 text-sm uppercase tracking-wider">Tu puntuación</span>
-                                    <Rating v-model="userRating.score" :cancel="false" class="scale-150 py-2" />
+                                    <Rating v-model="userRating.score" :cancel="false" class="scale-150 py-2 custom-rating" :pt="{ 
+                                        onIcon: { class: '!text-[#5369F2] !fill-[#5369F2]' },
+                                        offIcon: { class: 'hover:!text-[#5369F2] hover:!fill-transparent hover:!stroke-[#5369F2] transition-colors' },
+                                        item: { class: 'hover:!text-[#5369F2] hover:!fill-transparent transition-colors' }
+                                    }" />
                                 </div>
 
                                 <div class="space-y-2">
                                     <label class="text-gray-400 text-sm px-1">Tu comentario (opcional)</label>
-                                    <Textarea v-model="userRating.comment" rows="4" autoResize placeholder="¿Qué te ha parecido esta guía?" class="w-full bg-[#0b0f19] border-gray-700 text-white rounded-xl focus:border-primary p-4" />
+                                    <Textarea v-model="userRating.comment" rows="4" autoResize placeholder="¿Qué te ha parecido esta guía?" class="w-full bg-[#0b0f19] border-gray-700 text-white rounded-xl focus:border-[#5369F2] p-4" />
                                 </div>
 
                                 <div class="flex gap-3">
@@ -128,7 +128,7 @@
                                     <Button 
                                         :label="existingUserRating ? 'Actualizar' : 'Publicar'" 
                                         icon="pi pi-send" 
-                                        class="flex-1 p-4 font-bold shadow-lg shadow-primary/20" 
+                                        class="flex-1 p-4 font-bold shadow-lg shadow-[#5369F2]/20 !bg-[#5369F2] !border-[#5369F2] !text-white" 
                                         :loading="isSubmitting"
                                         @click="submitRating"
                                     />
@@ -289,7 +289,7 @@ const getDifficultyClass = (diff) => {
         case 'A': return 'bg-orange-900/40 text-orange-400 border-orange-500/30';
         case 'B': return 'bg-yellow-900/40 text-yellow-400 border-yellow-500/30';
         case 'C': return 'bg-blue-900/40 text-blue-400 border-blue-500/30';
-        case 'D': return 'bg-green-900/40 text-green-400 border-green-500/30';
+        case 'D': return 'bg-blue-900/20 text-blue-400 border-blue-500/20';
         default: return 'bg-gray-800 text-gray-300 border-gray-700';
     }
 };
@@ -309,4 +309,11 @@ onMounted(fetchGuide);
 .guide-content p { margin-bottom: 1.5rem; overflow-wrap: break-word; }
 .guide-content img { max-width: 100%; height: auto; border-radius: 1.5rem; margin: 2.5rem 0; border: 1px solid #1e293b; }
 .guide-content * { max-width: 100%; overflow-wrap: break-word; }
+
+/* Forzar azul en hover para las estrellas (por si pt falla) */
+.custom-rating [data-pc-section="item"]:hover svg,
+.custom-rating [data-pc-section="item"]:hover .p-rating-icon {
+    color: #5369F2 !important;
+    stroke: #5369F2 !important;
+}
 </style>

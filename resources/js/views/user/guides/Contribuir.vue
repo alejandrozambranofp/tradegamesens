@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 min-h-screen" style="background-color: #0b0f19;">
+    <div class="p-4 min-h-screen" style="background-color: #111827;">
         <div class="mb-12 px-2">
             <div class="flex flex-col">
                 <h1 class="text-4xl font-bold text-white font-orbitron tracking-tighter uppercase">
@@ -34,7 +34,7 @@
                 <!-- Imagen de Portada -->
                 <div class="field">
                     <label class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Imagen de Portada (Obligatoria)</label>
-                    <div class="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-gray-700 rounded-2xl bg-[#0b0f19] hover:border-primary/50 transition-colors cursor-pointer"
+                    <div class="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-gray-700 rounded-2xl bg-[#111827] hover:border-primary/50 transition-colors cursor-pointer"
                         @click="coverInput.click()">
                         <input type="file" ref="coverInput" class="hidden" accept="image/*" @change="onImageSelect" />
                         
@@ -50,33 +50,33 @@
                     </div>
                 </div>
                 
-                <div class="field">
-                    <label for="title" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Título de la Guía</label>
-                    <InputText id="title" v-model="guide.title" 
-                        placeholder="Escribe el título de tu guía..." 
-                        class="!bg-[#0b0f19] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none" />
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="field">
+                        <label for="title" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Título de la Guía</label>
+                        <InputText id="title" v-model="guide.title" 
+                            placeholder="Escribe el título de tu guía..." 
+                            class="!bg-[#111827] !border-white/10 !text-white !p-3 !rounded-xl focus:!border-[#5369F2] !shadow-none w-full" />
+                    </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="field">
                         <label for="game" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Juego Relacionado</label>
                         <Dropdown id="game" v-model="guide.game_id" :options="games" optionLabel="title" optionValue="id" 
                             placeholder="Selecciona un juego" :filter="true" appendTo="self"
-                            class="!bg-[#0b0f19] !border-white/10 !text-white !rounded-xl" />
+                            class="!bg-[#111827] !border-white/10 !text-white !rounded-xl w-full" />
                     </div>
 
                     <div class="field">
                         <label for="cats" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Categorías</label>
                         <MultiSelect id="cats" v-model="selectedCategories" :options="categories" optionLabel="name" optionValue="id" 
                             placeholder="Elige temas" display="chip" appendTo="self"
-                            class="!bg-[#0b0f19] !border-white/10 !text-white !rounded-xl w-full" />
+                            class="!bg-[#111827] !border-white/10 !text-white !rounded-xl w-full" />
                     </div>
 
                     <div class="field">
                         <label for="difficulty" class="text-gray-400 font-medium mb-2 block uppercase text-xs tracking-wider">Dificultad (Obligatoria)</label>
                         <Dropdown id="difficulty" v-model="guide.difficulty" :options="['D', 'C', 'B', 'A', 'S']" 
                             placeholder="Selecciona un nivel" appendTo="self"
-                            class="!bg-[#0b0f19] !border-white/10 !text-white !rounded-xl w-full" />
+                            class="!bg-[#111827] !border-white/10 !text-white !rounded-xl w-full" />
                     </div>
                 </div>
 
@@ -351,7 +351,7 @@ onMounted(async () => {
     color: #9ca3af !important;
 }
 .editor-dark-wrapper .p-editor-content {
-    background-color: #0b0f19 !important;
+    background-color: #111827 !important;
     border-color: #374151 !important;
     color: white !important;
 }
