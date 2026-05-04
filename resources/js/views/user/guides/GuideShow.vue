@@ -136,7 +136,7 @@
                             </div>
                             <div v-else class="text-center py-8">
                                 <p class="text-gray-400 mb-6">Inicia sesión para valorar esta guía</p>
-                                <Button label="Iniciar Sesión" icon="pi pi-user" outlined class="w-full" @click="$router.push('/login')" />
+                                <Button label="Iniciar Sesión" icon="pi pi-user" outlined class="w-full !text-[#5369F2] !border-[#5369F2] hover:!bg-[#5369F2]/10" @click="$router.push('/login')" />
                             </div>
                         </div>
                     </div>
